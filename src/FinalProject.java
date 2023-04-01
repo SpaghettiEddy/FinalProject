@@ -3,6 +3,7 @@
     Eduardo Vila
  */
 
+import java.io.File;
 import java.util.Scanner;
 
 abstract class Person {
@@ -34,7 +35,41 @@ class Student extends Person {
 }
 
 public class FinalProject {
+//
+//    private static Scanner myScan = new Scanner(System.in);
+//    private static String menu() {
+//        String option;
+//        System.out.println("Choose one of these options:");
+//        System.out.println("1 - Add a new faculty to the schedule");
+//        System.out.println("2 - Enroll a student to a lecture");
+//        System.out.println("3 - Print the Schedule of a faculty");
+//        System.out.println("4 - Print the schedule of an TA");
+//        System.out.println("5 - Print the schedule of a student");
+//        System.out.println("6 - Delete a scheduled lecture");
+//        System.out.println("7 - Exit Program");
+//        System.out.print("Enter your choice: ");
+//        option = myScan.nextLine();
+//        return option;
+//    }
+
     public static void main(String[] args) {
-        System.out.println("chicken butt");
+        Scanner myScan = new Scanner(System.in);
+        String fileName = null;
+        boolean fileLoaded = false;
+
+        System.out.print("Enter the absolute path of the file: ");
+        do {
+            fileName = myScan.next();
+            try {
+                Scanner fileScan = new Scanner(new File(fileName));
+                fileLoaded = true;
+            } catch (Exception e) {
+                System.out.println("Sorry no such file.");
+                System.out.print("Try again: ");
+            }
+        } while (!fileLoaded);
+
+        System.out.println("File Found! Let’s proceed...");
+
     }
 }
