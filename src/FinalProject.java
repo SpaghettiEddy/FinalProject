@@ -62,7 +62,7 @@ public class FinalProject {
             fileName = myScan.next();
             try {                       // Attempts to take input from fileName
                 Scanner fileScan = new Scanner(new File(fileName));     // If an exception is caught at this line...
-                fileLoaded = true;                                      // This line won't be reached (i.e. fileLoaded will stay)
+                fileLoaded = true;                                      // This line won't be reached (i.e. fileLoaded will stay false)
             } catch (Exception e) {
                 System.out.println("Sorry no such file.");
                 System.out.print("Try again: ");
