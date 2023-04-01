@@ -54,21 +54,24 @@ public class FinalProject {
 
     public static void main(String[] args) {
         Scanner myScan = new Scanner(System.in);
-        String fileName;
-        boolean fileLoaded = false;
+        Scanner fileScan;
 
         System.out.print("Enter the absolute path of the file: ");
-        do {                            // Run until file is successfully loaded (i.e. fileLoaded becomes true)
-            fileName = myScan.next();
-            try {                       // Attempts to take input from fileName
-                Scanner fileScan = new Scanner(new File(fileName));     // If an exception is caught at this line...
-                fileLoaded = true;                                      // This line won't be reached (i.e. fileLoaded will stay false)
+        do {                                                // Run until file is successfully loaded
+            String fileName = myScan.next();
+            try {                                           // Attempts to take input from fileName
+                fileScan = new Scanner(new File(fileName)); // If an exception is caught at this line...
+                break;                                      // This line won't be reached (i.e. loop will never break)
             } catch (Exception e) {
-                System.out.println("Sorry no such file.");
+                System.out.println("Sorry no such file.");  // On failed input, prompts for another input
                 System.out.print("Try again: ");
             }
-        } while (!fileLoaded);
+        } while (true);
 
         System.out.println("File Found! Let’s proceed...");
+
+        String firstLine = fileScan.nextLine();
+        System.out.println(firstLine);                      // Just testing that it's reading the file right
+
     }
 }
