@@ -67,7 +67,6 @@ public class FinalProject {
                 System.out.print("Try again: ");
             }
         } while (true);
-
         System.out.println("File Found! Let’s proceed...");
 
         String firstLine = fileScan.nextLine();
