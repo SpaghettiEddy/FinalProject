@@ -6,6 +6,26 @@
 import java.io.File;
 import java.util.Scanner;
 
+abstract class Course {
+    private int crn;
+    private String location;
+
+    public int getCrn() {return crn;}
+    public void setCrn(int crn) {this.crn = crn;}
+    public String getLocation() {return location;}
+    public void setLocation(String location) {this.location = location;}
+}
+
+class Lecture extends Course {
+    private String prefix;
+    private String title;
+    private String gradLevel;
+}
+
+class Lab extends Course {
+
+}
+
 abstract class Person {
     private String name;
     private String id;
@@ -35,22 +55,23 @@ class Student extends Person {
 }
 
 public class FinalProject {
-//
-//    private static Scanner myScan = new Scanner(System.in);
-//    private static String menu() {
-//        String option;
-//        System.out.println("Choose one of these options:");
-//        System.out.println("1 - Add a new faculty to the schedule");
-//        System.out.println("2 - Enroll a student to a lecture");
-//        System.out.println("3 - Print the Schedule of a faculty");
-//        System.out.println("4 - Print the schedule of an TA");
-//        System.out.println("5 - Print the schedule of a student");
-//        System.out.println("6 - Delete a scheduled lecture");
-//        System.out.println("7 - Exit Program");
-//        System.out.print("Enter your choice: ");
-//        option = myScan.nextLine();
-//        return option;
-//    }
+
+    private static String menu() {
+        Scanner myScan = new Scanner(System.in);
+        String option;
+        System.out.println("*****************************************");
+        System.out.println("Choose one of these options:");
+        System.out.println("\t1 - Add a new faculty to the schedule");
+        System.out.println("\t2 - Enroll a student to a lecture");
+        System.out.println("\t3 - Print the Schedule of a faculty");
+        System.out.println("\t4 - Print the schedule of an TA");
+        System.out.println("\t5 - Print the schedule of a student");
+        System.out.println("\t6 - Delete a scheduled lecture");
+        System.out.println("\t7 - Exit Program");
+        System.out.print("\t\t\tEnter your choice: ");
+        option = myScan.nextLine();
+        return option;
+    }
 
     public static void main(String[] args) {
         Scanner myScan = new Scanner(System.in);
@@ -69,8 +90,29 @@ public class FinalProject {
         } while (true);
         System.out.println("File Found! Let’s proceed...");
 
-        String firstLine = fileScan.nextLine();
-        System.out.println(firstLine);                      // Just testing that it's reading the file right
+        String option = menu();
 
+        while (!option.equals("0")) {
+            switch (option) {
+                case "1":
+                    System.out.println("Enter UCF id: ");
+                    break;
+                case "2":
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    break;
+                case "5":
+                    break;
+                case "6":
+                    break;
+                case "7":
+                    break;
+                default:
+                    System.out.println("Invalid selection...");
+            }
+            option = menu();
+        }
     }
 }
