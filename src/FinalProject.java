@@ -4,6 +4,7 @@
  */
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 abstract class Course {
@@ -20,10 +21,45 @@ class Lecture extends Course {
     private String prefix;
     private String title;
     private String gradLevel;
+    private String modality;
+    private String location;
+    private boolean hasLab;
+
+    public String getPrefix() {return prefix;}
+    public void setPrefix(String prefix) {this.prefix = prefix;}
+    public String getTitle() {return title;}
+    public void setTitle(String title) {this.title = title;}
+    public String getGradLevel() {return gradLevel;}
+    public void setGradLevel(String gradLevel) {this.gradLevel = gradLevel;}
+    public String getModality() {return modality;}
+    public void setModality(String modality) {this.modality = modality;}
+    public boolean isHasLab() {return hasLab;}
+    public void setHasLab(boolean hasLab) {this.hasLab = hasLab;}
+
+    public Lecture(int crn, String prefix, String title, String gradLevel, String modality) {  // Online lecture
+        setCrn(crn);
+        setPrefix(prefix);
+        setTitle(title);
+        setGradLevel(gradLevel);
+        setModality(modality);
+    }
+
+    public Lecture(int crn, String prefix, String title, String gradLevel, String modality, String location, boolean hasLab) {
+        setCrn(crn);
+        setPrefix(prefix);
+        setTitle(title);
+        setGradLevel(gradLevel);
+        setModality(modality);
+        setLocation(location);
+        setHasLab(hasLab);
+    }
 }
 
 class Lab extends Course {
-
+    public Lab(int crn, String location){
+        setCrn(crn);
+        setLocation(location);
+    }
 }
 
 abstract class Person {
@@ -77,6 +113,11 @@ public class FinalProject {
         Scanner myScan = new Scanner(System.in);
         Scanner fileScan;
 
+        String line;
+        String arr[];
+
+        ArrayList<Course> courseList = new ArrayList<Course>();
+
         System.out.print("Enter the absolute path of the file: ");
         do {                                                // Run until file is successfully loaded
             String fileName = myScan.next();
@@ -88,6 +129,28 @@ public class FinalProject {
                 System.out.print("Try again: ");
             }
         } while (true);
+
+        while(fileScan.hasNextLine()) {                     // Fill courseList with the courses in the lec.tct file
+            line = fileScan.nextLine();
+            arr = line.split(",");
+            if (arr.length == 2) {  // If the array only has 2 elements, then it must be a lab
+                Lab temp = new Lab(Integer.parseInt(arr[0]), arr[1]);
+                courseList.add(temp);
+            }
+            else {                                  // If the array length is greater than 2, it must be a lecture
+                if (arr[5].equalsIgnoreCase("Online")) {    // We call the constructor for an online lecture
+                    //public Lecture(int crn, String prefix, String title, String gradLevel, String modality) {  // Online lecture
+                    Lecture temp = new Lecture(Integer.parseInt(arr[0]), arr[1], arr[2], arr[3], arr[4]);
+                    courseList.add(temp);
+                }
+                else {      // We call the constructor for a lecture that has a physical location
+                    boolean hasLab = arr[6].equalsIgnoreCase("yes")?true:false;
+                    Lecture temp = new Lecture(Integer.parseInt(arr[0]), arr[1], arr[2], arr[3], arr[4], arr[5], hasLab);
+                    courseList.add(temp);
+                }
+            }
+        }
+
         System.out.println("File Found! Let’s proceed...");
 
         String option = menu();
