@@ -205,6 +205,8 @@ public class FinalProject {
         String tempId, tempName, tempRank, tempOffice;
         int numCourses;
         int lecturesTaught[];
+        int tempLab[];
+        tempLab = new int[3];
 
         people.add(temp);
         System.out.print("Enter UCF id: ");
@@ -234,7 +236,20 @@ public class FinalProject {
                         System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
                                 "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
                         for (int k = 0; k < 3; k++) {
-                            System.out.println("\t\t\t" + courseList.get(j + k).getCrn() + "," + courseList.get(j + k).getLocation());
+                            System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
+                            tempLab[k] = courseList.get(j + k + 1).getCrn();
+                        }
+                        for (int k = 0; k < 3; k++) {
+                            System.out.println("Enter the TA's id for " + tempLab[k] + ": ");
+                            scanner.nextLine();
+                            String tempTAId = scanner.next();
+                            // Remember to check later if ta exists. For now ta does not
+                            System.out.print("Name of TA:");
+                            String tempTAName = scanner.nextLine();
+                            System.out.print("TA’s supervisor’s name: ");
+                            String tempSupervisor = scanner.next();
+                            System.out.print("Degree seeking: ");
+                            String tempDegree = scanner.next();
                         }
                     }
                 }
