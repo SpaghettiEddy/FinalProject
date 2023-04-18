@@ -1,0 +1,493 @@
+import java.util.InputMismatchException;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
+
+
+
+
+abstract class Course {
+    private int crn;
+    private String location;
+    public int getCrn() {return crn;}
+    public void setCrn(int crn) {this.crn = crn;}
+    public String getLocation() {return location;}
+    public void setLocation(String location) {this.location = location;}
+}
+class Lecture extends Course {
+    private String prefix;
+    private String title;
+    private String gradLevel;
+    private String modality;
+  //  private String location;
+    private boolean hasLab;
+
+    public String getPrefix() {return prefix;}
+    public void setPrefix(String prefix) {this.prefix = prefix;}
+    public String getTitle() {return title;}
+    public void setTitle(String title) {this.title = title;}
+    public String getGradLevel() {return gradLevel;}
+    public void setGradLevel(String gradLevel) {this.gradLevel = gradLevel;}
+    public String getModality() {return modality;}
+    public void setModality(String modality) {this.modality = modality;}
+    public boolean isHasLab() {return hasLab;}
+    public void setHasLab(boolean hasLab) {this.hasLab = hasLab;}
+
+    public Lecture(int crn, String prefix, String title, String gradLevel, String modality) {  // Online lecture
+        setCrn(crn);
+        setPrefix(prefix);
+        setTitle(title);
+        setGradLevel(gradLevel);
+        setModality(modality);
+    }
+
+    public Lecture(int crn, String prefix, String title, String gradLevel, String modality, String location, boolean hasLab) {
+        setCrn(crn);
+        setPrefix(prefix);
+        setTitle(title);
+        setGradLevel(gradLevel);
+        setModality(modality);
+        setLocation(location);
+        setHasLab(hasLab);
+    }
+}
+
+class Lab extends Course {
+
+    public Lab(int crn, String location){
+        setCrn(crn);
+        setLocation(location);
+    }
+}
+
+abstract class Person {
+    private String name;
+    private String id;
+    public String getName() {return name;}
+    public void setName(String name) {this.name = name;}
+    public String getId() {return id;}
+    public void setId(String id) {this.id = id;}
+}
+class Faculty extends Person{
+    private String rank;
+    //NEED TO INCLUDE LIST OF LECTURES TAUGHT BY THIS FACULTY (ARRAY OR INTERFACE? IDK YET)
+}
+class TA extends Person {
+    private String advisor;
+    private String degree;
+    //NEED TO INCLUDE LIST OF LABS SUPERVISED BY THIS TA (ARRAY OR INTERFACE? IDK YET)
+}
+class Student extends Person {
+    private String studentType;
+    //NEED TO INCLUDE POSSIBLE LIST OF LABS TAKEN BY THIS STUDENT (ARRAY OR INTERFACE? IDK YET)
+}
+public class Main {
+    private static String menu() {
+        Scanner scanner = new Scanner(System.in);
+        String option;
+        System.out.println("\n*****************************************");
+        System.out.println("Choose one of these options:");
+        System.out.println("\t1 - Add a new faculty to the schedule");
+        System.out.println("\t2 - Enroll a student to a lecture");
+        System.out.println("\t3 - Print the Schedule of a faculty");
+        System.out.println("\t4 - Print the schedule of an TA");
+        System.out.println("\t5 - Print the schedule of a student");
+        System.out.println("\t6 - Delete a scheduled lecture");
+        System.out.println("\t7 - Exit Program");
+        System.out.print("\t\t\tEnter your choice: ");
+        option = scanner.nextLine();
+        return option;
+    }
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Scanner fileScan;
+
+        String line;
+        String arr[];
+
+        ArrayList<Course> courseList = new ArrayList<Course>();
+
+
+        ArrayList<Person> people = new ArrayList<Person>();   
+      
+        System.out.print("Enter the absolute path of the file: ");
+        do {                                                // Run until file is successfully loaded
+            String fileName = scanner.next();
+            try {                                           // Attempts to take input from fileName
+                fileScan = new Scanner(new File(fileName)); // If an exception is caught at this line...
+                break;                                      // This line won't be reached (i.e. loop will never break)
+            } catch (Exception e) {
+                System.out.println("Sorry no such file.");  // On failed input, prompts for another input
+                System.out.print("Try again: ");
+            }
+        } while (true);
+
+        while(fileScan.hasNextLine()) {                     // Fill courseList with the courses in the lec.tct file
+            line = fileScan.nextLine();
+            arr = line.split(",");
+            if (arr.length == 2) {  // If the array only has 2 elements, then it must be a lab
+                Lab temp = new Lab(Integer.parseInt(arr[0]), arr[1]);
+                courseList.add(temp);
+            }
+            else {                                  // If the array length is greater than 2, it must be a lecture
+                if (arr[4].equalsIgnoreCase("Online")) {    // We call the constructor for an online lecture
+                    //public Lecture(int crn, String prefix, String title, String gradLevel, String modality) {  // Online lecture
+                    Lecture temp = new Lecture(Integer.parseInt(arr[0]), arr[1], arr[2], arr[3], arr[4]);
+                    courseList.add(temp);
+                }
+                else {      // We call the constructor for a lecture that has a physical location
+                    boolean hasLab = arr[6].equalsIgnoreCase("yes")?true:false;
+                    Lecture temp = new Lecture(Integer.parseInt(arr[0]), arr[1], arr[2], arr[3], arr[4], arr[5], hasLab);
+                    courseList.add(temp);
+                }
+            }
+        }
+
+        System.out.println("File Found! Let’s proceed...");
+
+             String option = menu();
+
+        while (!option.equals("0")) {
+
+
+            scanner.nextLine();
+
+            switch (option){
+                case "1":
+                addFaculty(scanner);
+                    break;
+                case "2":
+                enrollStudent(scanner);
+                    break;
+                case "3":
+                printFacultySchedule(scanner);
+                    break;
+                case "4":
+                printTASchedule(scanner);
+                    break;
+                case "5":
+                printStudentSchedule(scanner);
+                    break;
+                case "6":
+                deleteLecture(scanner);
+                    break;
+                case "7":
+                goodBye(scanner);
+                    break;
+                default:
+                    System.out.println("Invalid selection...");
+            }
+            option = menu();
+    }
+  }
+
+
+
+  // Incorrect digits for id
+public static class IdException extends Exception {
+    public IdException(String message) {
+        super(message);
+    }
+}
+
+
+
+private static void goodBye(Scanner scanner){
+
+    System.out.print("You have made a deletion of at least one lecture. Would you like to print the copy of lec.txt? Enter y/Y for Yes or n/N for No: ");
+while (true) {
+    String response = scanner.nextLine().trim().toLowerCase();
+
+    if (response.equals("y")) {
+        System.out.println("Printing copy of lec.txt...");
+        // code to print copy of lec.txt
+        break; // exit the loop
+    } else if (response.equals("n")) {
+        System.out.println("Okay, lec.txt will not be printed.");
+        break; // exit the loop
+    } else {
+        System.out.print("Is that a yes or no? Enter y/Y for Yes or n/N for No: ");
+    }
+}
+  System.out.print("Bye!");
+  
+}
+
+
+
+
+
+ // Choice 1, Add a new Faculty to the schedule
+
+private static void addFaculty(Scanner scanner) {
+while (true) {
+    System.out.print("Enter UCF ID: ");
+    int id;
+    try {
+        id = scanner.nextInt();
+        if (String.valueOf(id).length() != 7) {
+            throw new IdException(">>>>>>>>>>>Sorry incorrect format. (Ids are 7 digits)");
+        }
+    } catch (InputMismatchException e) {
+        System.out.println("Sorry, the entered ID is invalid. Please enter a positive 7-digit integer.");
+        scanner.next(); // clear scanner buffer
+        continue; // prompt user to enter ID again
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
+        continue; // prompt user to enter ID again
+    }
+    scanner.nextLine(); // consume the rest of the input line
+    
+   // if (faculties.containsKey(id)) {
+      //  System.out.println("Faculty with this ID already exists.");
+    // else {
+        break; // exit the loop if ID is valid and not already in use
+   // }
+}
+// continue with the rest of the code here
+
+
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+
+  while (true) {
+    System.out.print("Enter rank: ");
+    String rank = scanner.nextLine().toLowerCase();
+    if (!rank.equals("professor")) {
+        System.out.println("Sorry, rank must be 'Professor'.");
+        continue;
+    }
+    // rank is valid, do something with it
+    break;
+}
+
+
+
+      System.out.print("Enter office location: ");
+    String officeLocation = scanner.nextLine();
+
+
+
+ int numLectures = 0;
+        boolean validInput = false;
+        while (!validInput) {
+            try {
+                System.out.print("Enter how many lectures: ");
+                numLectures = Integer.parseInt(scanner.nextLine());
+                validInput = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input: please enter a valid integer.");
+            }
+        }
+  
+  //  System.out.print("Enter how many lectures: ");
+    //int numLectures = scanner.nextInt();
+    //scanner.nextLine();
+
+
+
+// Ask user to enter CRNs separated by a space
+System.out.print("Enter the crns of the lectures: ");
+String input = scanner.nextLine();
+
+// Split the input into individual CRNs
+String[] crns = input.split(" ");
+
+
+
+
+
+  
+
+// TA output 
+
+        System.out.print("Enter the TA's id for []: ");
+        int taId1 = scanner.nextInt();
+        scanner.nextLine();
+
+        // A student can’t be a TA for a lecture in which that student is taking
+
+        System.out.print("TA found as a student: ");
+        String taName1 = scanner.nextLine();     
+
+        // This means that " + taName1 + " isn't a student in Programming Languages
+
+        System.out.print("TA's supervisor's name: ");
+        String supervisorName1 = scanner.nextLine();
+
+        System.out.print("Degree Seeking: ");
+        String degree1 = scanner.nextLine();
+
+        System.out.print("Enter the TA's id for []: ");
+        int taId2 = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Name of TA: ");
+        String taName2 = scanner.nextLine();
+
+        System.out.print("TA's supervisor's name: ");
+        String supervisorName2 = scanner.nextLine();
+
+        System.out.print("Degree Seeking: ");
+        String degree2 = scanner.nextLine();
+
+        System.out.print("Enter the TA's id for []: ");
+        int taId3 = scanner.nextInt();
+        scanner.nextLine();
+
+    }
+
+
+
+// choice 2, Enroll a Student to a Lecture
+
+private static void enrollStudent(Scanner scanner) {
+            while (true) {
+    System.out.print("Enter UCF ID: ");
+    int id;
+    try {
+        id = scanner.nextInt();
+        if (String.valueOf(id).length() != 7) {
+            throw new IdException(">>>>>>>>>>>Sorry incorrect format. (Ids are 7 digits)");
+        }
+        break; // exit the loop if a valid ID is entered
+    } catch (InputMismatchException e) {
+        System.out.println("Sorry, the entered ID is invalid. Please enter a positive 7-digit integer.");
+        scanner.next(); // clear scanner buffer
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
+    }
+    scanner.nextLine(); // consume the rest of the input line
+}
+
+// continue with the rest of the code here
+
+
+  System.out.println("Record found/name: ");
+      scanner.nextLine();
+
+ System.out.println("Which lecture to enroll [] in: ");
+      scanner.nextLine();
+
+  System.out.print("[] has these labs: ");
+       scanner.nextLine();
+
+
+  System.out.println("[] is added to lab:");
+    scanner.nextLine();
+
+
+  System.out.print("Student enrolled!");
+}
+
+
+            // choice 3, Print the schedule of a Faculty
+
+private static void printFacultySchedule(Scanner scanner) {
+              int facultyId;
+while (true) {
+    System.out.print("Enter UCF id: ");
+    try {
+        facultyId = scanner.nextInt();
+        if (String.valueOf(facultyId).length() != 7) {
+            throw new IdException(">>>>>>>>>>>Sorry incorrect format. (Ids are 7 digits)");
+        }
+        break; // Exit the loop if a valid ID is entered
+    } catch (InputMismatchException e) {
+        System.out.println("Sorry, the entered ID is invalid. Please enter a positive 7-digit integer.");
+        scanner.next(); // clear scanner buffer
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
+    }
+    scanner.nextLine(); // add this line to consume the rest of the input line
+}
+
+  System.out.println("[] is teaching the following lectures:");
+
+}
+
+
+
+
+
+  // choice 4, print the schedule of a TA
+
+private static void printTASchedule(Scanner scanner) {
+               int taId;
+while (true) {
+    System.out.print("Enter UCF id: ");
+    try {
+        taId = scanner.nextInt();
+        if (String.valueOf(taId).length() != 7) {
+            throw new IdException(">>>>>>>>>>>Sorry incorrect format. (Ids are 7 digits)");
+        }
+        break; // break out of loop if id is valid
+    } catch (InputMismatchException e) {
+        System.out.println("Sorry, the entered ID is invalid. Please enter a positive 7-digit integer.");
+        scanner.next(); // clear scanner buffer
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
+    }
+    scanner.nextLine(); // consume rest of input line
+}
+}
+
+
+  // choice 5, print the schedule of a Student
+  
+private static void printStudentSchedule(Scanner scanner) {
+               int studentId;
+while (true) {
+    System.out.print("Enter UCF id: ");
+    try {
+        studentId = scanner.nextInt();
+        if (String.valueOf(studentId).length() != 7) {
+            throw new IdException(">>>>>>>>>>>Sorry incorrect format. (Ids are 7 digits)");
+        }
+        break; // break out of the loop if valid input is entered
+    } catch (InputMismatchException e) {
+        System.out.println("Sorry, the entered ID is invalid. Please enter a positive 7-digit integer.");
+        scanner.next(); // clear scanner buffer
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
+    }
+    scanner.nextLine(); // consume the rest of the input line
+}
+
+
+    System.out.println("Record Found: \n");
+    System.out.println("Enrolled in the following lectures");
+
+}
+
+
+   // choice 6, Delete a Lecture
+  
+
+
+  private static void deleteLecture(Scanner scanner) {
+System.out.print("Enter CRN of the lecture to delete: ");
+int crn = scanner.nextInt();
+        scanner.nextLine(); // consume the newline character
+
+
+try {
+    // Read CRN from file
+    File file = new File("lec.txt");
+    Scanner fileScanner = new Scanner(file);
+    String crnString = fileScanner.nextLine();
+    int crnFromFile = Integer.parseInt(crnString);
+    fileScanner.close();
+   
+        
+} catch (FileNotFoundException e) {
+    System.out.println("lec.txt not found.");
+} catch (NumberFormatException e) {
+    System.out.println("Invalid CRN format in lec.txt.");
+}
+  }
+
+
+
+}
