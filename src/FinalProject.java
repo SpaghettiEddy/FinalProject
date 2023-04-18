@@ -22,7 +22,6 @@ class Lecture extends Course {
     private String title;
     private String gradLevel;
     private String modality;
-    private String location;
     private boolean hasLab;
 
     public String getPrefix() {return prefix;}
@@ -53,12 +52,22 @@ class Lecture extends Course {
         setLocation(location);
         setHasLab(hasLab);
     }
+
+    @Override
+    public String toString() {
+        return '[' + prefix + '/' + title + '/' + gradLevel + '/' + modality + '/' + getLocation() + '/' + hasLab + "]\n";
+    }
 }
 
 class Lab extends Course {
     public Lab(int crn, String location){
         setCrn(crn);
         setLocation(location);
+    }
+
+    @Override
+    public String toString() {
+        return getCrn() + ',' + getLocation() + "\n";
     }
 }
 
@@ -74,20 +83,19 @@ abstract class Person {
 
 class Faculty extends Person{
     private String rank;
-    //NEED TO INCLUDE LIST OF LECTURES TAUGHT BY THIS FACULTY (ARRAY OR INTERFACE? IDK YET)
+
 
 }
 
 class TA extends Person {
     private String advisor;
     private String degree;
-    //NEED TO INCLUDE LIST OF LABS SUPERVISED BY THIS TA (ARRAY OR INTERFACE? IDK YET)
 
 }
 
 class Student extends Person {
     private String studentType;
-    //NEED TO INCLUDE POSSIBLE LIST OF LABS TAKEN BY THIS STUDENT (ARRAY OR INTERFACE? IDK YET)
+
 }
 
 public class FinalProject {
@@ -118,6 +126,8 @@ public class FinalProject {
 
         ArrayList<Course> courseList = new ArrayList<Course>();
 
+        ArrayList<Faculty> schedule = new ArrayList<Faculty>();
+
         System.out.print("Enter the absolute path of the file: ");
         do {                                                // Run until file is successfully loaded
             String fileName = myScan.next();
@@ -138,7 +148,7 @@ public class FinalProject {
                 courseList.add(temp);
             }
             else {                                  // If the array length is greater than 2, it must be a lecture
-                if (arr[5].equalsIgnoreCase("Online")) {    // We call the constructor for an online lecture
+                if (arr[4].equalsIgnoreCase("Online")) {    // We call the constructor for an online lecture
                     //public Lecture(int crn, String prefix, String title, String gradLevel, String modality) {  // Online lecture
                     Lecture temp = new Lecture(Integer.parseInt(arr[0]), arr[1], arr[2], arr[3], arr[4]);
                     courseList.add(temp);
@@ -158,7 +168,32 @@ public class FinalProject {
         while (!option.equals("0")) {
             switch (option) {
                 case "1":
-                    System.out.println("Enter UCF id: ");
+                    Faculty temp = new Faculty();
+
+                    String tempID, tempName, tempRank, tempOffice;
+                    int numCourses;
+                    int lecturesTaught[];
+
+                    schedule.add(temp);
+                    System.out.print("Enter UCF id: ");
+                    tempID = myScan.next();
+                    myScan.nextLine();
+                    System.out.print("Enter name: ");
+                    tempName = myScan.nextLine();
+                    System.out.print("Enter rank: ");
+                    tempRank = myScan.next();
+                    System.out.print("Enter office location: ");
+                    tempOffice = myScan.next();
+                    System.out.print("Enter how many lectures: ");
+                    numCourses = myScan.nextInt();
+
+                    lecturesTaught = new int[numCourses];
+                    System.out.print("Enter the crns of the lectures: ");
+                    for (int i = 0; i < numCourses; i++)
+                        lecturesTaught[i] = myScan.nextInt();
+
+                    System.out.println("DONE ~ TESTING");
+
                     break;
                 case "2":
                     break;
