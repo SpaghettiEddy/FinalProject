@@ -171,35 +171,35 @@ public class FinalProject {
                     System.out.println("DONE ~ TESTING");
 
                     break;
-                    case "2":
-                        String tempStudent;
-                        System.out.print("Enter UCF id: ");
-                        tempStudent = scanner.next();
-                        System.out.println("Record found/Name: " + "ADD NAMESEARCH HERE");   // Have to search for name given ucfid
-                        //
-                        //  GOTTA FINISH
-                        //
-                        //
-                        break;
-                    case "3":
-                        break;
-                    case "4":
-                        break;
-                    case "5":
-                        break;
-                    case "6":
-                        break;
-                    case "7":
-                        break;
-                    default:
-                        System.out.println("Invalid selection...");
-                }
-                option = menu();
+                case "2":
+                    String tempStudent;
+                    System.out.print("Enter UCF id: ");
+                    tempStudent = scanner.next();
+                    System.out.println("Record found/Name: " + "ADD NAMESEARCH HERE");   // Have to search for name given ucfid
+                    //
+                    //  GOTTA FINISH
+                    //
+                    //
+                    break;
+                case "3":
+                    break;
+                case "4":
+                    break;
+                case "5":
+                    break;
+                case "6":
+                    break;
+                case "7":
+                    break;
+                default:
+                    System.out.println("Invalid selection...");
             }
-
+            option = menu();
         }
 
-    public static void addFaculty (Scanner scanner, ArrayList < Course > courseList, ArrayList < Person > people){
+    }
+
+    public static void addFaculty(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         Faculty temp = new Faculty();
 
         String tempId, tempName, tempRank, tempOffice;
@@ -226,7 +226,6 @@ public class FinalProject {
 
         for (int i = 0; i < numCourses; i++) {
             for (int j = 0; j < courseList.size(); j++) {
-
                 if (courseList.get(j).getCrn() == lecturesTaught[i]) {
                     if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
                         System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
@@ -243,4 +242,33 @@ public class FinalProject {
         }
     }
 
+    // Option 2
+    public static void enrollStudent(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+
+    }
+
+    // Option 3
+    private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+
+    }
+
+    // Option 4
+    private static void printTASchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+
+    }
+
+    // Option 5
+    private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+
+    }
+
+    // Option 6
+    private static void deleteLecture(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+
+    }
+
+    // Option 7
+    private static void goodBye(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+
+    }
 }
