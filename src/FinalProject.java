@@ -240,16 +240,16 @@ public class FinalProject {
                             tempLab[k] = courseList.get(j + k + 1).getCrn();
                         }
                         for (int k = 0; k < 3; k++) {
-                            System.out.println("Enter the TA's id for " + tempLab[k] + ": ");
+                            System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
                             scanner.nextLine();
-                            String tempTAId = scanner.next();
+                            String tempTAId = scanner.nextLine();
                             // Remember to check later if ta exists. For now ta does not
                             System.out.print("Name of TA:");
                             String tempTAName = scanner.nextLine();
                             System.out.print("TA’s supervisor’s name: ");
-                            String tempSupervisor = scanner.next();
+                            String tempSupervisor = scanner.nextLine();
                             System.out.print("Degree seeking: ");
-                            String tempDegree = scanner.next();
+                            String tempDegree = scanner.nextLine();
                         }
                     }
                 }
