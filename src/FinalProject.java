@@ -5,8 +5,6 @@
     John LASTNAME
  */
 
-// Testing x3
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Scanner;
