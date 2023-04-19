@@ -2,6 +2,7 @@
     COP3330 Final Project
     Ashley Fram
     Eduardo Vila
+    John LASTNAME
  */
 
 import java.io.File;
@@ -53,11 +54,6 @@ class Lecture extends Course {
         setLocation(location);
         setHasLab(hasLab);
     }
-
-    @Override
-    public String toString() {
-        return '[' + prefix + '/' + title + '/' + gradLevel + '/' + modality + '/' + getLocation() + '/' + hasLab + "]\n";
-    }
 }
 
 class Lab extends Course {
@@ -65,11 +61,6 @@ class Lab extends Course {
         setCrn(crn);
         setLocation(location);
     }
-
-//    @Override
-//    public String toString() {
-//        return getCrn() + ',' + getLocation() + "\n";
-//    }
 }
 
 abstract class Person {
@@ -84,18 +75,15 @@ abstract class Person {
 
 class Faculty extends Person{
     private String rank;
-
 }
 
 class TA extends Person {
     private String advisor;
     private String degree;
-
 }
 
 class Student extends Person {
     private String studentType;
-
 }
 
 public class FinalProject {
@@ -168,18 +156,8 @@ public class FinalProject {
             switch (option) {
                 case "1":
                     addFaculty(scanner, courseList, people);
-                    System.out.println("DONE ~ TESTING");
-
                     break;
                 case "2":
-                    String tempStudent;
-                    System.out.print("Enter UCF id: ");
-                    tempStudent = scanner.next();
-                    System.out.println("Record found/Name: " + "ADD NAMESEARCH HERE");   // Have to search for name given ucfid
-                    //
-                    //  GOTTA FINISH
-                    //
-                    //
                     break;
                 case "3":
                     break;
@@ -196,9 +174,10 @@ public class FinalProject {
             }
             option = menu();
         }
-
     }
 
+
+    // Option 1 - Add a new Faculty to the schedule
     public static void addFaculty(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         Faculty temp = new Faculty();
 
@@ -226,6 +205,7 @@ public class FinalProject {
         for (int i = 0; i < numCourses; i++)
             lecturesTaught[i] = scanner.nextInt();
 
+
         for (int i = 0; i < numCourses; i++) {
             for (int j = 0; j < courseList.size(); j++) {
                 if (courseList.get(j).getCrn() == lecturesTaught[i]) {
@@ -244,12 +224,12 @@ public class FinalProject {
                             scanner.nextLine();
                             String tempTAId = scanner.nextLine();
                             // Remember to check later if ta exists. For now ta does not
-                            System.out.print("Name of TA:");
+                            System.out.print("Name of TA: ");
                             String tempTAName = scanner.nextLine();
                             System.out.print("TA’s supervisor’s name: ");
                             String tempSupervisor = scanner.nextLine();
                             System.out.print("Degree seeking: ");
-                            String tempDegree = scanner.nextLine();
+                            String tempDegree = scanner.next();
                         }
                     }
                 }
@@ -257,32 +237,33 @@ public class FinalProject {
         }
     }
 
-    // Option 2
+
+    // Option 2 - Enroll a Student to a Lecture
     public static void enrollStudent(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
     }
 
-    // Option 3
+    // Option 3 - Print the schedule of a Faculty
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
     }
 
-    // Option 4
+    // Option 4 - Print the schedule of an TA
     private static void printTASchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
     }
 
-    // Option 5
+    // Option 5 - Print the schedule of a Student
     private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
     }
 
-    // Option 6
+    // Option 6 - Delete a Lecture
     private static void deleteLecture(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
     }
 
-    // Option 7
+    // Option 7 - Exit
     private static void goodBye(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
     }
