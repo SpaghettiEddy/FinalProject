@@ -330,8 +330,8 @@ public class Main {
                             System.out.print("Name of TA: ");
                             String tempTAName = scanner.nextLine();
 
-    TA tempTA = new TA(tempTAId, tempTAName); // create a new TA object
-                                  people.add(tempTA);        
+   // TA tempTA = new TA(tempTAId, tempTAName); // create a new TA object
+     //                             people.add(tempTA);        
 
 
 
