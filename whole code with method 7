@@ -315,6 +315,7 @@ while (true) {
 } else {
           System.out.print("Bye!");
 }
+          System.exit(0);
 
     }
 }
