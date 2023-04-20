@@ -86,8 +86,12 @@ class Lab extends Course {
 abstract class Person {
     private String name;
     private String id;
+  
+      public String getTAId() {return id;}
+    public String getTAName() {return id;}
 
-          public String getUcfId() {return id;}
+
+    public String getUcfId() {return id;}
 
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
@@ -97,20 +101,11 @@ abstract class Person {
 
 class Faculty extends Person{
     private String rank;
-}
-
-class TA extends Person {
-    private String advisor;
-    private String degree;
-}
-
-class Student extends Person {
-    private String studentType;
-  private final String ucfId;
+   private final String ucfId;
         private final String name;
 
 
-  public Student(String ucfId, String name) {
+  public Faculty(String ucfId, String name) {
             this.ucfId = ucfId;
             this.name = name;
         }
@@ -123,6 +118,59 @@ class Student extends Person {
             return name;
 }
 }
+
+class TA extends Person {
+    private String advisor;
+    private String degree;
+    private String taId;
+    private String taName;
+
+  
+public TA(String id, String name) {
+        this.taId = id;
+        this.taName = name;
+
+}
+
+    public String getTAId() {
+        return taId;
+    }
+
+
+
+    public String getTAName() {
+        return taName;
+    }
+
+
+
+  
+}
+
+class Student extends Person {
+    private String studentType;
+//   private final String ucfId;
+//         private final String name;
+
+
+//   public Student(String ucfId, String name) {
+//             this.ucfId = ucfId;
+//             this.name = name;
+//         }
+
+//         public String getUcfId() {
+//             return ucfId;
+//         }
+
+//         public String getName() {
+//             return name;
+// }
+}
+
+
+
+
+
 
 public class Main {
 
@@ -150,8 +198,6 @@ public class Main {
 
         String line;
         String arr[];
-
-        ArrayList<Student> stu = new ArrayList<>();
 
 
         ArrayList<Course> courseList = new ArrayList<Course>();
@@ -225,7 +271,7 @@ public class Main {
 
     // Option 1 - Add a new Faculty to the schedule
     public static void addFaculty(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-        Faculty temp = new Faculty();
+        //Faculty temp = new Faculty();
 
         String tempId, tempName, tempRank, tempOffice;
         int numCourses;
@@ -233,12 +279,22 @@ public class Main {
         int tempLab[];
         tempLab = new int[3];
 
-        people.add(temp);
+
+      //  people.add(temp);
         System.out.print("Enter UCF id: ");
-        tempId = scanner.next();
-        scanner.nextLine();
-        System.out.print("Enter name: ");      
-        tempName = scanner.nextLine();
+         tempId = scanner.next();
+         scanner.nextLine();
+         System.out.print("Enter name: ");      
+         tempName = scanner.nextLine();
+
+     Faculty tempFaculty = new Faculty(tempId, tempName);
+        people.add(tempFaculty);        
+
+
+
+
+      
+
         System.out.print("Enter rank: ");
         tempRank = scanner.next();
         System.out.print("Enter office location: ");
@@ -265,6 +321,7 @@ public class Main {
                             System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
                             tempLab[k] = courseList.get(j + k + 1).getCrn();
                         }
+
                         for (int k = 0; k < 3; k++) {
                             System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
                             scanner.nextLine();
@@ -272,6 +329,15 @@ public class Main {
                             // Remember to check later if ta exists. For now ta does not
                             System.out.print("Name of TA: ");
                             String tempTAName = scanner.nextLine();
+
+    TA tempTA = new TA(tempTAId, tempTAName); // create a new TA object
+                                  people.add(tempTA);        
+
+
+
+
+
+                          
                             System.out.print("TA’s supervisor’s name: ");
                             String tempSupervisor = scanner.nextLine();
                             System.out.print("Degree seeking: ");
@@ -286,54 +352,135 @@ public class Main {
 
     // Option 2 - Enroll a Student to a Lecture
     public static void enrollStudent(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-
-
-
-
-
+      
     }
 
+
+
+
+
+
+
+  
     // Option 3 - Print the schedule of a Faculty
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
 
-
-  //List<Student> stu = new ArrayList<>();
-
         System.out.print("Enter UCF id: ");
         String tempId = scanner.next();
         scanner.nextLine();
-        System.out.print("Enter name: ");
-        String tempName = scanner.nextLine();
-
-        Student tempStudent = new Student(tempId, tempName);
-        people.add(tempStudent);
-       for (Person person : people) {
-            System.out.println("UCF ID: " + person.getUcfId());
-            System.out.println("Name: " + person.getName());
-       }
-    }
-
-
-
-
-
-
-
-
-
+        
+      boolean foundMatch = false; // add a flag to keep track if a match was found
 
       
-    
+         for (Person person : people) {
+           // System.out.println("UCF ID: " + person.getUcfId());
+            if (person.getUcfId().equals(tempId)) {
+
+              System.out.println(person.getName() + " is teaching the following lectures: \n");
+            
+              foundMatch = true; // set flag to true if a match is found
+        }
+    }
+
+    // Check the flag and print error message if no matching UCF ID is found
+    if (!foundMatch) {
+        System.out.println("No Faculty with this id.");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   
     // Option 4 - Print the schedule of an TA
     private static void printTASchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
+      
+        System.out.print("Enter the TA's UCF id: ");
+        String tempTAId = scanner.next();
+        scanner.nextLine();
+        
+      boolean foundMatch = false; // add a flag to keep track if a match was found
+
+      
+        for (Person person : people) {
+           // System.out.println("UCF ID: " + person.getUcfId());
+                  if (person.getTAId().equals(tempTAId)) {
+
+            System.out.println(person.getTAName() + " is assisting the following lectures: \n");
+                    foundMatch = true; // set flag to true if a match is found
+        }
     }
 
+    // Check the flag and print error message if no matching UCF ID is found
+    if (!foundMatch) {
+        System.out.println("No TA with this id.");
+    }
+       
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
     // Option 5 - Print the schedule of a Student
     private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+    //     System.out.print("Enter UCF id: ");
+    //     String tempId = scanner.next();
+    //     scanner.nextLine();
+    // boolean foundMatch = false; // add a flag to keep track if a match was found
 
+      
+    //     for (Person person : people) {
+    //        // System.out.println("UCF ID: " + person.getUcfId());
+    //               if (person.getUcfId().equals(tempId)) {
+
+    //         System.out.println(person.getName() + " is teaching the following lectures: \n");
+    //                 foundMatch = true; // set flag to true if a match is found
+    //     }
+    // }
+
+    // // Check the flag and print error message if no matching UCF ID is found
+    // if (!foundMatch) {
+    //     System.out.println("No Student with this id.");
+    // }
+       
+
+
+      
     }
 
     // Option 6 - Delete a Lecture
@@ -429,4 +576,15 @@ while (true) {
           System.exit(0);
 
     }
+
+
+
+
+
+
+
+
+
 }
+
+   
