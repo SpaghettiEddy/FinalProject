@@ -370,18 +370,45 @@ public class Main {
     }
          //tempId = scanner.next();
          scanner.nextLine();
-         System.out.print("Enter name: ");      
-         tempName = scanner.nextLine();      
+
+
+    //   Check if the UCF ID already exists
+    for (Person person : people) {
+        if (person.getUcfId().equals(tempId)) {
+            System.out.println("Faculty with this UCF ID already exists. Skipping name, rank, and office input.");
+            return;
+        }
+    }
+
+
 
 
 
 
       
+         System.out.print("Enter name: ");      
+         tempName = scanner.nextLine();      
 
+
+   while (true) {
         System.out.print("Enter rank: ");
         tempRank = scanner.next();
+        if (!tempRank.equalsIgnoreCase("Professor")) {
+            System.out.println("Invalid rank. Please enter 'Professor'.");
+        } else {
+            break;
+        }
+    }
+    scanner.nextLine();
+
+
+      
+
+       //System.out.print("Enter rank: ");
+     //  tempRank = scanner.next();
         System.out.print("Enter office location: ");
         tempOffice = scanner.next();
+   
         System.out.print("Enter how many lectures: ");
         numCourses = scanner.nextInt();
 
@@ -548,7 +575,10 @@ String tempId;
       
          for (Person person : people) {
            // System.out.println("UCF ID: " + person.getUcfId());
-            if (person.getUcfId().equals(tempId)) {
+            //if (person.getUcfId().equals(tempId)) {
+
+                if (person.getUcfId() != null && person.getUcfId().equals(tempId)) {
+
 
               System.out.println(person.getName() + " is teaching the following lectures: \n");
 
@@ -719,5 +749,7 @@ while (true) {
 
 
 }
+
+   
 
    
