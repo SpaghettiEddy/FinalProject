@@ -1,0 +1,67 @@
+ 
+ 
+import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+ 
+ 
+ 
+ // Option 6
+    private static void deleteLecture(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+      
+
+// Step 1: Read contents of "lec.txt" into ArrayList
+        ArrayList<Lecture> classList = new ArrayList<>();
+
+        try {
+            Scanner fileScanner = new Scanner(new File("lec.txt"));
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String[] parts = line.split(",");
+                int crn = Integer.parseInt(parts[0]);
+                String prefix = parts[1];
+                String title = parts[1];
+                String modality = parts[1];
+                boolean hasLab = Boolean.parseBoolean(parts[1]);
+                String location = parts[1];
+                classList.add(new Lecture(crn, prefix, title, "", modality, location, hasLab));
+            }
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: lec.txt");
+            return;
+        }
+
+        // Step 2: Prompt user for CRN of lecture to delete
+        System.out.print("Enter the crn of the lecture to delete: ");
+        int crnToDelete = scanner.nextInt();
+
+        // Step 3: Find and remove matching Lecture object from ArrayList
+        Lecture lectureToDelete = null;
+        for (Lecture lecture : classList) {
+            if (lecture.getCrn() == crnToDelete) {
+                lectureToDelete = lecture;
+                break;
+            }
+        }
+        if (lectureToDelete == null) {
+            System.out.println("Lecture not found with CRN " + crnToDelete);
+            return;
+        }
+        courseList.remove(lectureToDelete);
+
+        // Step 4: Write updated ArrayList back to "lec.txt"
+        try {
+            PrintWriter writer = new PrintWriter("lec.txt");
+            for (Lecture lecture : classList) {
+                writer.println(lecture.getCrn() + "," + lecture.getPrefix() + "," + lecture.getTitle() + "," +
+                        lecture.getModality() + "," + lecture.isHasLab() + "," + lecture.getLocation());
+            }
+            writer.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Error writing to file: lec.txt");
+            return;
+        }
+
+        // Step 5: Print confirmation message
+        System.out.println("[" + crnToDelete + "/" + lectureToDelete.getPrefix() + "/" + lectureToDelete.getTitle() + "] Deleted");
+    }
