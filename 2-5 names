@@ -359,29 +359,77 @@ public class Main {
 
       //  people.add(temp);
        // System.out.print("Enter UCF id: ");
- while (true) {
+ // while (true) {
+ //        System.out.print("Enter UCF id: ");
+ //        tempId = scanner.next();
+ //        if (tempId.length() != 7 || !tempId.matches("\\d+")) {
+ //            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+ //        } else {
+ //            break;
+ //        }
+ //    }
+
+
+      while (true) {
+    try {
         System.out.print("Enter UCF id: ");
         tempId = scanner.next();
+
         if (tempId.length() != 7 || !tempId.matches("\\d+")) {
-            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+            throw new IdException();
         } else {
             break;
         }
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
     }
+}
          //tempId = scanner.next();
          scanner.nextLine();
-         System.out.print("Enter name: ");      
-         tempName = scanner.nextLine();      
+
+
+
+      
+    //   Check if the UCF ID already exists
+    for (Person person : people) {
+        if (person.getUcfId().equals(tempId)) {
+            System.out.println("Faculty with this UCF ID already exists. Skipping name, rank, and office input.");
+            return;
+        }
+    }
+
+
 
 
 
 
       
+         System.out.print("Enter name: ");      
+         tempName = scanner.nextLine();      
 
+
+   while (true) {
         System.out.print("Enter rank: ");
         tempRank = scanner.next();
+        if (!tempRank.equalsIgnoreCase("Professor")) {
+            System.out.println("Invalid rank. Please enter 'Professor'.");
+        } else {
+            break;
+        }
+    }
+    scanner.nextLine();
+
+
+      
+
+       //System.out.print("Enter rank: ");
+     //  tempRank = scanner.next();
         System.out.print("Enter office location: ");
         tempOffice = scanner.next();
+
+
+      
+
         System.out.print("Enter how many lectures: ");
         numCourses = scanner.nextInt();
 
@@ -459,15 +507,30 @@ System.out.print("Degree seeking: ");
 
 String tempStuId;
       
- while (true) {
+ // while (true) {
+ //        System.out.print("Enter UCF id: ");
+ //        tempStuId = scanner.next();
+ //        if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
+ //            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+ //        } else {
+ //            break;
+ //        }
+ //    }
+
+          while (true) {
+    try {
         System.out.print("Enter UCF id: ");
         tempStuId = scanner.next();
+
         if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
-            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+            throw new IdException();
         } else {
             break;
         }
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
     }
+}
    // System.out.print("Enter UCF ID: ");
     //String tempStuId = scanner.next();
     scanner.nextLine(); 
@@ -529,16 +592,35 @@ scanner.nextLine();
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
       
 String tempId;
-      
- while (true) {
+
+
+
+    while (true) {
+    try {
         System.out.print("Enter UCF id: ");
         tempId = scanner.next();
+
         if (tempId.length() != 7 || !tempId.matches("\\d+")) {
-            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+            throw new IdException();
         } else {
             break;
         }
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
     }
+}
+
+      
+      
+ // while (true) {
+ //        System.out.print("Enter UCF id: ");
+ //        tempId = scanner.next();
+ //        if (tempId.length() != 7 || !tempId.matches("\\d+")) {
+ //            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+ //        } else {
+ //            break;
+ //        }
+ //    }
      //   System.out.print("Enter UCF id: ");
        // String tempId = scanner.next();
         scanner.nextLine();
@@ -548,7 +630,10 @@ String tempId;
       
          for (Person person : people) {
            // System.out.println("UCF ID: " + person.getUcfId());
-            if (person.getUcfId().equals(tempId)) {
+            //if (person.getUcfId().equals(tempId)) {
+
+                if (person.getUcfId() != null && person.getUcfId().equals(tempId)) {
+
 
               System.out.println(person.getName() + " is teaching the following lectures: \n");
 
@@ -579,15 +664,32 @@ for (int i = 0; i < personLectures.length; i++) {
 
 
        String tempTAId;
- while (true) {
+
+
+    while (true) {
+    try {
         System.out.print("Enter UCF id: ");
         tempTAId = scanner.next();
+
         if (tempTAId.length() != 7 || !tempTAId.matches("\\d+")) {
-            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+            throw new IdException();
         } else {
             break;
         }
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
     }
+}
+      
+ // while (true) {
+ //        System.out.print("Enter UCF id: ");
+ //        tempTAId = scanner.next();
+ //        if (tempTAId.length() != 7 || !tempTAId.matches("\\d+")) {
+ //            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+ //        } else {
+ //            break;
+ //        }
+ //    }
       
         //System.out.print("Enter the TA's UCF id: ");
        // String tempTAId = scanner.next();
@@ -620,15 +722,31 @@ for (int i = 0; i < personLectures.length; i++) {
     // Option 5 - Print the schedule of a Student
     private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
     String tempStuId;
-       while (true) {
+
+while (true) {
+    try {
         System.out.print("Enter UCF id: ");
         tempStuId = scanner.next();
+
         if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
-            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+            throw new IdException();
         } else {
             break;
         }
+    } catch (IdException e) {
+        System.out.println(e.getMessage());
     }
+}
+      
+    //    while (true) {
+    //     System.out.print("Enter UCF id: ");
+    //     tempStuId = scanner.next();
+    //     if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
+    //         System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
+    //     } else {
+    //         break;
+    //     }
+    // }
 
 //System.out.print("Enter UCF id: ");
   //      String tempStuId = scanner.next();
@@ -719,5 +837,9 @@ while (true) {
 
 
 }
+
+   
+
+   
 
    
