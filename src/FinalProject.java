@@ -91,13 +91,17 @@ abstract class Person {
     public void setId(String id) {this.id = id;}
     public String getName() {return name;}
     public void setName(String name) {this.name = name;}
+
+    @Override
+    public String toString() {
+        return id + "," + name;
+    }
 }
 
 class Faculty extends Person{
     private String rank;
     private String office;
     private int[] lecturesTaught;
-
 
     public String getRank() {return rank;}
     public void setRank(String rank) {this.rank = rank;}
@@ -112,6 +116,11 @@ class Faculty extends Person{
         setRank(rank);
         setOffice(office);
         setLecturesTaught(lecturesTaught);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "," + rank + "," + office + "," + lecturesTaught;
     }
 }
 
@@ -154,7 +163,6 @@ public class FinalProject {
         boolean lectureDeleted = false;
 
         ArrayList<Course> courseList = new ArrayList<Course>();
-
         ArrayList<Person> people = new ArrayList<Person>();
 
         System.out.print("Enter the absolute path of the file: ");
@@ -230,16 +238,18 @@ public class FinalProject {
         int lecturesTaught[], tempLab[];
         tempLab = new int[3];
 
-        tempId = getUCFId(scanner);
+        System.out.print("Enter UCF id: ");
+        tempId = scanner.next();
+        scanner.nextLine();
         System.out.print("Enter name: ");
-        tempName = scanner.next();
+        tempName = scanner.nextLine();
         System.out.print("Enter rank: ");
         tempRank = scanner.next();
-        scanner.next();
         System.out.print("Enter office location: ");
         tempOffice = scanner.next();
         System.out.print("Enter how many lectures: ");
         numCourses = scanner.nextInt();
+
         lecturesTaught = new int[numCourses];
         System.out.print("Enter the crns of the lectures: ");
         for (int i = 0; i < numCourses; i++)
@@ -248,34 +258,38 @@ public class FinalProject {
         temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
         people.add(temp);
 
-        for (int i = 0; i < numCourses; i++) {
-            for (int j = 0; j < courseList.size(); j++) {
-                if (courseList.get(j).getCrn() == lecturesTaught[i]) {
-                    if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
-                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
-                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
-                    else if (((Lecture) courseList.get(j)).isHasLab()) {
-                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
-                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
-                        for (int k = 0; k < 3; k++) {
-                            System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
-                            tempLab[k] = courseList.get(j + k + 1).getCrn();
-                        }
-                        for (int k = 0; k < 3; k++) {
-                            System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
-                            scanner.nextLine();
-                            String tempTAId = scanner.nextLine();
-                            // Remember to check later if ta exists. For now ta does not
-                            System.out.print("Name of TA: ");
-                            String tempTAName = scanner.nextLine();
-                            System.out.print("TA’s supervisor’s name: ");
-                            String tempSupervisor = scanner.nextLine();
-                            System.out.print("Degree Seeking: ");
-                            String tempDegree = scanner.next();
-                        }
-                    }
-                }
-            }
+//        for (int i = 0; i < numCourses; i++) {
+//            for (int j = 0; j < courseList.size(); j++) {
+//                if (courseList.get(j).getCrn() == lecturesTaught[i]) {
+//                    if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
+//                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
+//                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
+//                    else if (((Lecture) courseList.get(j)).isHasLab()) {
+//                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
+//                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
+//                        for (int k = 0; k < 3; k++) {
+//                            System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
+//                            tempLab[k] = courseList.get(j + k + 1).getCrn();
+//                        }
+//                        for (int k = 0; k < 3; k++) {
+//                            System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
+//                            scanner.nextLine();
+//                            String tempTAId = scanner.nextLine();
+//                            // Remember to check later if ta exists. For now ta does not
+//                            System.out.print("Name of TA: ");
+//                            String tempTAName = scanner.nextLine();
+//                            System.out.print("TA’s supervisor’s name: ");
+//                            String tempSupervisor = scanner.nextLine();
+//                            System.out.print("Degree Seeking: ");
+//                            String tempDegree = scanner.next();
+//                        }
+//                    }
+//                }
+//            }
+//        }
+
+        for (Person person: people) {
+            System.out.println(person);
         }
     }
 
@@ -289,25 +303,26 @@ public class FinalProject {
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
 
         String tempId = getUCFId(scanner);
-        boolean foundMatch = false; // add a flag to keep track if a match was found
+        Faculty professor = null;
         for (Person person : people) {
-            // System.out.println("UCF ID: " + person.getUcfId());
             if (person.getId().equals(tempId)) {
-
-                System.out.println(person.getName() + " is teaching the following lectures: \n");
-
-                foundMatch = true; // set flag to true if a match is found
-                int[] personLectures = ((Faculty) person).getLecturesTaught();
-                for (int i = 0; i < personLectures.length; i++) {
-                    System.out.println("[" + personLectures[i] + "]");
-                }
-            }
+                professor = (Faculty) person;
+                System.out.println("Kyle Johnson is teaching the following lectures:");
+            } else
+                System.out.println("No Faculty with this id.");
         }
 
-
-        // Check the flag and print error message if no matching UCF ID is found
-        if (!foundMatch) {
-            System.out.println("No Faculty with this id.");
+        for (int i = 0; i < professor.getLecturesTaught().length; i++) {
+            for (int j = 0; j < courseList.size(); j++) {
+                if (professor.getLecturesTaught()[i] == courseList.get(j).getCrn()){
+                    if (((Lecture) courseList.get(j)).isHasLab()) {
+                        System.out.println("\t[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getTitle() + "] with Labs:" );
+                        for (int k = 1; k <= 3; k++)
+                            System.out.println("\t\t[" + courseList.get(j + k).getCrn() + "/" + courseList.get(j + k).getLocation() + "]");
+                    }
+                    //System.out.println(courseList.get());
+                }
+            }
         }
     }
 
@@ -373,6 +388,9 @@ public class FinalProject {
         System.exit(0);
     }
 
+
+
+    //NEEEEEEDS WORK
     private static String getUCFId(Scanner scanner) {
         String UCFId;
         while (true) {
