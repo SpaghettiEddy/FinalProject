@@ -39,7 +39,7 @@ abstract class Course {
 }
 
 class Lecture extends Course {
-  
+
     private String prefix;
     private String title;
     private String gradLevel;
@@ -89,6 +89,9 @@ public String toString(){
 }
 
 }
+  
+
+
 
 //     @Override
 //     public String toString(){
@@ -159,22 +162,36 @@ class Student extends Person {
     private String degree;
     private String studentType;
     private boolean isTA;
-    private ArrayList<Lecture> lecturesAttending;
-    private ArrayList<Lab> labsAttending;
-    private ArrayList<Lab> labsAssisting;
+    private ArrayList<Lecture> lecturesAttending = new ArrayList<>();
+    private ArrayList<Lab> labsAttending = new ArrayList<>();
+    private ArrayList<Lab> labsAssisting = new ArrayList<>();
 
     public String getAdvisor() {return advisor;}
     public void setAdvisor(String advisor) {this.advisor = advisor;}
     public String getDegree() {return degree;}
     public void setDegree(String degree) {this.degree = degree;}
+    public boolean isTA() {return isTA;}
+    public void setTA(boolean TA) {isTA = TA;}
+
     public String getStudentType() {return studentType;}
     public void setStudentType(String studentType) {this.studentType = studentType;}
 
-    public Student(String id, String name, String advisor, String degree) {
-        setId(id);
-        setName(name);
+    public void addTAData(String advisor, String degree, Lab labAssisting) {
         setAdvisor(advisor);
         setDegree(degree);
+        labsAssisting.add(labAssisting);
+        setTA(true);
+    }
+
+    public void addTALab(Lab labAssisting) {
+        labsAssisting.add(labAssisting);
+    }
+
+    public Student(String id, String name) {
+        setId(id);
+        setName(name);
+        setTA(false);
+
     }
 }
 
@@ -251,15 +268,15 @@ public class Main {
         Scanner fileScan;
 
         // // In method 7, user is prompted to print lec.txt ONLY IF deleteLecture() is run, else "Bye!"
-      boolean lectureDeleted = false;
+        boolean lectureDeleted = false;
 
         String line;
         String arr[];
 
 
-        ArrayList<Course> courseList = new ArrayList<Course>();
+        ArrayList<Course> courseList = new ArrayList<>();
 
-        ArrayList<Person> people = new ArrayList<Person>();
+        ArrayList<Person> people = new ArrayList<>();
 
 
 
@@ -319,7 +336,7 @@ public class Main {
                     break;
                 case "6":
                     deleteLecture(scanner, courseList, people);
-                lectureDeleted = true;
+                    lectureDeleted = true;
                     break;
                 case "7":
                     goodBye(scanner, courseList, lectureDeleted);
@@ -356,23 +373,18 @@ public class Main {
         }
         scanner.nextLine();
 
-
-
-
 // Check if the UCF ID already exists
-boolean facultyExists = false;
-for (Person person : people) {
-    if (person.getId().equals(tempId)) {
-        System.out.println("Faculty with this UCF ID already exists. Skipping name, rank, and office input.");
-
-       
-        facultyExists = true;
-        break;
-    }
-}
+        boolean facultyExists = false;
+        for (Person person : people) {
+            if (person.getId().equals(tempId)) {
+                System.out.println("Faculty with this UCF ID already exists. Skipping name, rank, and office input.");
+                facultyExists = true;
+                break;
+            }
+        }
 
 
-      
+
         // //   Check if the UCF ID already exists
         // for (Person person : people) {
         //     if (person.getId().equals(tempId)) {
@@ -382,71 +394,63 @@ for (Person person : people) {
         // }
 
 
-      if (!facultyExists) {
+        if (!facultyExists) {
 
-        System.out.print("Enter name: ");
-        tempName = scanner.nextLine();
-        while (true) {
-            System.out.print("Enter rank: ");
-            tempRank = scanner.next();
-            if (!tempRank.equalsIgnoreCase("Professor")) {
-                System.out.println("Invalid rank. Please enter 'Professor'.");
-            } else {
-                break;
+            System.out.print("Enter name: ");
+            tempName = scanner.nextLine();
+            while (true) {
+                System.out.print("Enter rank: ");
+                tempRank = scanner.next();
+                if (!tempRank.equalsIgnoreCase("Professor")) {
+                    System.out.println("Invalid rank. Please enter 'Professor'.");
+                } else {
+                    break;
+                }
             }
+            scanner.nextLine();
+
+            System.out.print("Enter office location: ");
+            tempOffice = scanner.next();
+
         }
-        scanner.nextLine();
-
-        System.out.print("Enter office location: ");
-        tempOffice = scanner.next();
-
-
-
-      }
-        
 
         System.out.print("Enter how many lectures: ");
         numCourses = scanner.nextInt();
 
 
+        lecturesTaught = new int[numCourses];
+        System.out.print("Enter the CRNs of the lectures: ");
+        for (int i = 0; i < numCourses; i++) {
+            int crn = scanner.nextInt();
+            boolean invalidCRN = false;
 
-
-
-
-
-lecturesTaught = new int[numCourses];
-System.out.print("Enter the CRNs of the lectures: ");
-for (int i = 0; i < numCourses; i++) {
-    int crn = scanner.nextInt();
-    boolean invalidCRN = false;
-
-    // Check if the CRN is already assigned to a faculty
-    for (Person person : people) {
-        if (person instanceof Faculty) {
-            Faculty faculty = (Faculty) person;
-            for (int j = 0; j < faculty.getLecturesTaught().length; j++) {
-                if (crn == faculty.getLecturesTaught()[j]) {
-                    System.out.println("CRN " + crn + " is already assigned to " + faculty.getName() + ". Please choose another CRN.");
-                    invalidCRN = true;
-                    break;
+            // Check if the CRN is already assigned to a faculty
+            for (Person person : people) {
+                if (person instanceof Faculty) {
+                    Faculty faculty = (Faculty) person;
+                    for (int j = 0; j < faculty.getLecturesTaught().length; j++) {
+                        if (crn == faculty.getLecturesTaught()[j]) {
+                            System.out.println("CRN " + crn + " is already assigned to " + faculty.getName() + ". Please choose another CRN.");
+                            invalidCRN = true;
+                            break;
+                        }
+                    }
+                    if (invalidCRN) {
+                        break;
+                    }
                 }
             }
+
             if (invalidCRN) {
-                break;
+                i--;
+                continue;
             }
+
+            lecturesTaught[i] = crn;
         }
-    }
 
-    if (invalidCRN) {
-        i--;
-        continue;
-    }
-
-    lecturesTaught[i] = crn;
-}
-
-temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
-people.add(temp);
+        temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
+        people.add(temp);
 
         // lecturesTaught = new int[numCourses];
         // System.out.print("Enter the crns of the lectures: ");
@@ -457,74 +461,69 @@ people.add(temp);
         // temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
         // people.add(temp);
 
-       for (int i = 0; i < numCourses; i++) {
-           for (int j = 0; j < courseList.size(); j++) {
-               if (courseList.get(j).getCrn() == lecturesTaught[i]) {
-                   if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
-                       System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
-                               "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
-                   else if (((Lecture) courseList.get(j)).isHasLab()) {
-                       System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
-                               "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
-                       for (int k = 0; k < 3; k++) {
-                           System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
-                           tempLab[k] = courseList.get(j + k + 1).getCrn();
-                       }
-                       for (int k = 0; k < 3; k++) {
-                           String tempTAId;
-                          while (true) {
-            try {
-              System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
-                tempTAId = scanner.next();
+        for (int i = 0; i < numCourses; i++) {
+            for (int j = 0; j < courseList.size(); j++) {
+                if (courseList.get(j).getCrn() == lecturesTaught[i]) {
+                    if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
+                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
+                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
+                    else if (((Lecture) courseList.get(j)).isHasLab()) {
+                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
+                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
+                        for (int k = 0; k < 3; k++) {
+                            System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
+                            tempLab[k] = courseList.get(j + k + 1).getCrn();
+                        }
+                        for (int k = 0; k < 3; k++) {
+                            String tempTAId;
+                            while (true) {
+                                try {
+                                    System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
+                                    tempTAId = scanner.next();
 
-                if (tempTAId.length() != 7 || !tempTAId.matches("\\d+")) {
-                    throw new IdException();
-                } else {
-                    break;
+                                    if (tempTAId.length() != 7 || !tempTAId.matches("\\d+")) {
+                                        throw new IdException();
+                                    } else {
+                                        break;
+                                    }
+                                } catch (IdException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
+                            scanner.nextLine();
+
+                            boolean foundMatch = false; // add a flag to keep track if a match was found
+
+                            for (Person person: people) {
+                                if (person.getId() != null && person.getId().equals(tempTAId)) {
+                                    System.out.println("TA found as a student: " + person.getName());
+                                    ((Student) person).addTALab((Lab) courseList.get(j + k + 1));
+                                    foundMatch = true; // set flag to true if a match is found
+                                }
+                            }
+                            if (!foundMatch) {
+
+
+
+                                // Remember to check later if ta exists. For now ta does not
+                                System.out.print("Name of TA: ");
+                                String tempTAName = scanner.nextLine();
+                                System.out.print("TA’s supervisor’s name: ");
+                                String tempAdvisor = scanner.nextLine();
+                                System.out.print("Degree Seeking: ");
+                                String tempDegree = scanner.next();
+                                Student tempStudent = new Student(tempTAId, tempTAName);
+                                tempStudent.addTAData(tempAdvisor, tempDegree, (Lab) courseList.get(j + k + 1));
+                                people.add(tempStudent);
+                            }
+                        }
+                    }
                 }
-            } catch (IdException e) {
-                System.out.println(e.getMessage());
             }
         }
-        scanner.nextLine();
 
-
-
-
-boolean foundMatch = false; // add a flag to keep track if a match was found
-
-
-        for (Person person: people) {
-            if (person.getId() != null && person.getId().equals(tempTAId)) {
-              //  System.out.println("TA found: " + person.getName());
-                foundMatch = true; // set flag to true if a match is found
-
-
-            }
-        }
-        if (!foundMatch) {
-
-                         
-                         
-                           // Remember to check later if ta exists. For now ta does not
-                           System.out.print("Name of TA: ");
-                           String tempTAName = scanner.nextLine();
-                           System.out.print("TA’s supervisor’s name: ");
-                           String tempAdvisor = scanner.nextLine();
-                           System.out.print("Degree Seeking: ");
-                           String tempDegree = scanner.next();
-                          Student tempStudent = new Student(tempTAId, tempTAName, tempAdvisor, tempDegree);
-                          people.add(tempStudent);
-                       }
-                   }
-               }
-           }
-       }
-       }
-
-   //     for (Person person: people) {
-     //       System.out.println(person);
-      //  }
+             for (Person person: people)
+               System.out.println(person);
     }
 
 
@@ -587,7 +586,7 @@ boolean foundMatch = false; // add a flag to keep track if a match was found
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         String tempId;
 
-while (true) {
+        while (true) {
             try {
                 System.out.print("Enter UCF id: ");
                 tempId = scanner.next();
@@ -604,8 +603,8 @@ while (true) {
         scanner.nextLine();
         Faculty professor = null;
 
-      boolean facultyFound = false;
-      
+        boolean facultyFound = false;
+
         for (Person person : people)
             if (person.getId().equals(tempId)) {
                 professor = (Faculty) person;
@@ -616,7 +615,7 @@ while (true) {
         if (!facultyFound)
             System.out.println("No Faculty with this id.");
 
-   for (int i = 0; i < professor.getLecturesTaught().length; i++) {
+        for (int i = 0; i < professor.getLecturesTaught().length; i++) {
             for (int j = 0; j < courseList.size(); j++) {
                 if (professor.getLecturesTaught()[i] == courseList.get(j).getCrn()){
                     if (((Lecture) courseList.get(j)).isHasLab()) {
@@ -703,7 +702,7 @@ while (true) {
             if (person.getId() != null && person.getId().equals(tempStuId)) {
 
                 System.out.println("Record found: \n" + person.getName() + "\n");
-              System.out.println("Enrolled in the following lectures: \n");
+                System.out.println("Enrolled in the following lectures: \n");
 
                 foundMatch = true; // set flag to true if a match is found
 
@@ -750,55 +749,55 @@ while (true) {
 
 
 
-  
+
 
     // Option 7 - Exit
-     private static void goodBye(Scanner scanner, ArrayList<Course> courseList, boolean lectureDeleted) {
+    private static void goodBye(Scanner scanner, ArrayList<Course> courseList, boolean lectureDeleted) {
 
-if (lectureDeleted) {
-        System.out.println("You have made a deletion of at least one lecture. Would you like to print the copy of lec.txt?");
-        System.out.print("Enter y/Y for Yes or n/N for No: ");
+        if (lectureDeleted) {
+            System.out.println("You have made a deletion of at least one lecture. Would you like to print the copy of lec.txt?");
+            System.out.print("Enter y/Y for Yes or n/N for No: ");
 
-        while (true) {
-            String response = scanner.next().trim().toLowerCase();
-            if (response.equals("y")) {
-                System.out.println("Printing copy of lec.txt...");
+            while (true) {
+                String response = scanner.next().trim().toLowerCase();
+                if (response.equals("y")) {
+                    System.out.println("Printing copy of lec.txt...");
 
 
-for (Course course : courseList)
+                    for (Course course : courseList)
                         System.out.println(course);
-                     //break;
-              
+                    //break;
 
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter("lec.txt"));
-                    for (Course course : courseList) {
-                        writer.write(course.toString());
-                        writer.newLine();
+
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter("lec.txt"));
+                        for (Course course : courseList) {
+                            writer.write(course.toString());
+                            writer.newLine();
+                        }
+                        writer.close();
+                        System.out.println("lec.txt has been updated.");
+                    } catch (IOException e) {
+                        System.out.println("Error updating lec.txt: " + e.getMessage());
                     }
-                    writer.close();
-                    System.out.println("lec.txt has been updated.");
-                } catch (IOException e) {
-                    System.out.println("Error updating lec.txt: " + e.getMessage());
-                }
 
-                break;
-            } else if (response.equals("n")) {
-                System.out.println("Okay, lec.txt will not be printed.");
-                break;
-            } else
-                System.out.print("Is that a yes or no? Enter y/Y for Yes or n/N for No: ");
+                    break;
+                } else if (response.equals("n")) {
+                    System.out.println("Okay, lec.txt will not be printed.");
+                    break;
+                } else
+                    System.out.print("Is that a yes or no? Enter y/Y for Yes or n/N for No: ");
+            }
         }
+        System.out.println("Bye!");
+        System.exit(0);
     }
-    System.out.println("Bye!");
-    System.exit(0);
-}
 }
 
 
 
 
-       
+
 //         if(lectureDeleted){
 //             System.out.println("You have made a deletion of at least one lecture. Would you like to print the copy of lec.txt?");
 //             System.out.print("Enter y/Y for Yes or n/N for No: ");
@@ -808,7 +807,7 @@ for (Course course : courseList)
 //                 if (response.equals("y")) {
 //                     System.out.println("Printing copy of lec.txt...");
 
-                  
+
 //                     for (Course course : courseList)
 //                         System.out.println(course);
 //                     break;
@@ -838,7 +837,7 @@ for (Course course : courseList)
 
 
 
-    // Update to using the name ID exception
+// Update to using the name ID exception
 
 //     private static String getUCFId(Scanner scanner) {
 //         String UCFId;
@@ -857,9 +856,3 @@ for (Course course : courseList)
 
 
 
-
-
-
-
-
-   
