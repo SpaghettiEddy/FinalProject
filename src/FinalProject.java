@@ -4,9 +4,11 @@
     Eduardo Vila
     John LASTNAME
  */
-
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.FileNotFoundException;
+
 import java.io.FileNotFoundException;
 
 import java.io.File;
@@ -15,6 +17,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.Stream;
+import java.io.FileWriter;
 
 abstract class Course {
     private int crn;
@@ -77,6 +80,11 @@ class Lecture extends Course {
 }
 
 class Lab extends Course {
+    private String TAId;
+
+    public String getTAId() {return TAId;}
+    public void setTAId(String TAId) {this.TAId = TAId;}
+
     public Lab(int crn, String location){
         setCrn(crn);
         setLocation(location);
@@ -124,28 +132,29 @@ class Faculty extends Person{
     }
 }
 
-class TA extends Person {
+class Student extends Person {
     private String advisor;
     private String degree;
+    private String studentType;
+    private boolean isTA;
+    private ArrayList<Lecture> lecturesAttending;
+    private ArrayList<Lab> labsAttending;
+    private ArrayList<Lab> labsAssisting;
 
     public String getAdvisor() {return advisor;}
     public void setAdvisor(String advisor) {this.advisor = advisor;}
     public String getDegree() {return degree;}
     public void setDegree(String degree) {this.degree = degree;}
+    public String getStudentType() {return studentType;}
+    public void setStudentType(String studentType) {this.studentType = studentType;}
 
-    public TA(String id, String name, String advisor, String degree) {
+    public Student(String id, String name, String advisor, String degree) {
         setId(id);
         setName(name);
         setAdvisor(advisor);
         setDegree(degree);
     }
 }
-
-class Student extends Person {
-    private String studentType;
-}
-
-
 
 class IdException extends Exception {
     public IdException() {
@@ -156,14 +165,6 @@ class IdException extends Exception {
         super(message);
     }
 }
-
-
-
-
-
-
-
-
 
 public class FinalProject {
 
@@ -185,19 +186,16 @@ public class FinalProject {
     }
 
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
         Scanner fileScan;
+
+        boolean lectureDeleted = false;
 
         String line;
         String arr[];
 
-
         ArrayList<Course> courseList = new ArrayList<Course>();
-
         ArrayList<Person> people = new ArrayList<Person>();
-
-
 
         System.out.print("Enter the absolute path of the file: ");
         do {                                                // Run until file is successfully loaded
@@ -232,8 +230,6 @@ public class FinalProject {
 
         System.out.println("File Found! Let’s proceed...");
 
-
-
         String option = menu();
 
         while (!option.equals("0")) {
@@ -255,6 +251,7 @@ public class FinalProject {
                     break;
                 case "6":
                     deleteLecture(scanner, courseList, people);
+                    lectureDeleted = true;
                     break;
                 case "7":
                     goodBye(scanner, courseList, lectureDeleted);
@@ -289,7 +286,6 @@ public class FinalProject {
                 System.out.println(e.getMessage());
             }
         }
-        //tempId = scanner.next();
         scanner.nextLine();
 
         //   Check if the UCF ID already exists
@@ -299,6 +295,7 @@ public class FinalProject {
                 return;
             }
         }
+
         System.out.print("Enter name: ");
         tempName = scanner.nextLine();
         while (true) {
@@ -315,17 +312,8 @@ public class FinalProject {
         System.out.print("Enter office location: ");
         tempOffice = scanner.next();
 
-
-
-
         System.out.print("Enter how many lectures: ");
         numCourses = scanner.nextInt();
-
-        lecturesTaught = new int[numCourses];
-        System.out.print("Enter the crns of the lectures: ");
-        for (int i = 0; i < numCourses; i++)
-            lecturesTaught[i] = scanner.nextInt();
-
 
         lecturesTaught = new int[numCourses];
         System.out.print("Enter the crns of the lectures: ");
@@ -335,19 +323,19 @@ public class FinalProject {
         temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
         people.add(temp);
 
-//        for (int i = 0; i < numCourses; i++) {
-//            for (int j = 0; j < courseList.size(); j++) {
-//                if (courseList.get(j).getCrn() == lecturesTaught[i]) {
-//                    if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
-//                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
-//                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
-//                    else if (((Lecture) courseList.get(j)).isHasLab()) {
-//                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
-//                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
-//                        for (int k = 0; k < 3; k++) {
-//                            System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
-//                            tempLab[k] = courseList.get(j + k + 1).getCrn();
-//                        }
+        for (int i = 0; i < numCourses; i++) {
+            for (int j = 0; j < courseList.size(); j++) {
+                if (courseList.get(j).getCrn() == lecturesTaught[i]) {
+                    if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
+                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
+                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
+                    else if (((Lecture) courseList.get(j)).isHasLab()) {
+                        System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
+                                "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " has these labs:");
+                        for (int k = 0; k < 3; k++) {
+                            System.out.println("\t\t\t" + courseList.get(j + k + 1).getCrn() + "," + courseList.get(j + k + 1).getLocation());
+                            tempLab[k] = courseList.get(j + k + 1).getCrn();
+                        }
 //                        for (int k = 0; k < 3; k++) {
 //                            System.out.print("\nEnter the TA's id for " + tempLab[k] + ": ");
 //                            scanner.nextLine();
@@ -359,30 +347,25 @@ public class FinalProject {
 //                            String tempSupervisor = scanner.nextLine();
 //                            System.out.print("Degree Seeking: ");
 //                            String tempDegree = scanner.next();
+//                            Student tempStudent = new Student(tempTAId, tempTAName, tempSupervisor, tempDegree);
+//                            people.add(tempStudent);
 //                        }
-//                    }
-//                }
-//            }
-//        }
-
-        for (Person person: people) {
-            System.out.println(person);
+                    }
+                }
+            }
         }
     }
 
 
-
-
-
     // Option 2 - Enroll a Student to a Lecture
     public static void enrollStudent(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-        String tempStuId;
+        String tempId;
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
-                tempStuId = scanner.next();
+                tempId = scanner.next();
 
-                if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
+                if (tempId.length() != 7 || !tempId.matches("\\d+")) {
                     throw new IdException();
                 } else {
                     break;
@@ -391,27 +374,18 @@ public class FinalProject {
                 System.out.println(e.getMessage());
             }
         }
-        // System.out.print("Enter UCF ID: ");
-        //String tempStuId = scanner.next();
-        scanner.nextLine();
-
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
-
         for (Person person: people) {
-            // if (person.getTAId().equals(tempStuId)) {
-            if (         person.getId()         != null && person.getId().equals(tempStuId)) {
+            if (         person.getId()         != null && person.getId().equals(tempId)) {
                 System.out.println("Record found/name: " + person.getName());
                 foundMatch = true; // set flag to true if a match is found
-
-
                 System.out.println("Which lecture to enroll " + person.getName() + " in: ");
 
                 System.out.println("[] has these labs: ");
 
-                System.out.print("[] is added to lab:");
+                System.out.print(person.getName() + " is added to lab:");
                 scanner.nextLine();
-
             }
         }
         if (!foundMatch) {
@@ -432,16 +406,35 @@ public class FinalProject {
 
     // Option 3 - Print the schedule of a Faculty
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+        String tempId;
+        while (true) {
+            try {
+                System.out.print("Enter UCF id: ");
+                tempId = scanner.next();
 
-        String tempId = getUCFId(scanner);
+                if (tempId.length() != 7 || !tempId.matches("\\d+")) {
+                    throw new IdException();
+                } else {
+                    break;
+                }
+            } catch (IdException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        scanner.nextLine();
         Faculty professor = null;
-        for (Person person : people) {
+
+        boolean facultyFound = false;
+
+        for (Person person : people)
             if (person.getId().equals(tempId)) {
                 professor = (Faculty) person;
-                System.out.println("Kyle Johnson is teaching the following lectures:");
-            } else
-                System.out.println("No Faculty with this id.");
-        }
+                facultyFound = true;
+                System.out.println(person.getName() + " is teaching the following lectures:");
+            }
+
+        if (!facultyFound)
+            System.out.println("No Faculty with this id.");
 
         for (int i = 0; i < professor.getLecturesTaught().length; i++) {
             for (int j = 0; j < courseList.size(); j++) {
@@ -450,8 +443,8 @@ public class FinalProject {
                         System.out.println("\t[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getTitle() + "] with Labs:" );
                         for (int k = 1; k <= 3; k++)
                             System.out.println("\t\t[" + courseList.get(j + k).getCrn() + "/" + courseList.get(j + k).getLocation() + "]");
-                    }
-                    //System.out.println("[" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getName() + "]" + ));
+                    } else
+                        System.out.println("\t[" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getTitle() + "] [" + ((Lecture) courseList.get(j)).getModality() + "]");
                 }
             }
         }
@@ -459,11 +452,7 @@ public class FinalProject {
 
     // Option 4 - Print the schedule of a TA
     private static void printTASchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-
-
         String tempTAId;
-
-
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -479,21 +468,7 @@ public class FinalProject {
             }
         }
 
-        // while (true) {
-        //        System.out.print("Enter UCF id: ");
-        //        tempTAId = scanner.next();
-        //        if (tempTAId.length() != 7 || !tempTAId.matches("\\d+")) {
-        //            System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
-        //        } else {
-        //            break;
-        //        }
-        //    }
-
-        //System.out.print("Enter the TA's UCF id: ");
-        // String tempTAId = scanner.next();
         scanner.nextLine();
-
-
 
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
@@ -512,10 +487,6 @@ public class FinalProject {
             System.out.println("No TA with this id.");
         }
     }
-
-
-
-
 
     // Option 5 - Print the schedule of a Student
     private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
@@ -536,20 +507,7 @@ public class FinalProject {
             }
         }
 
-        //    while (true) {
-        //     System.out.print("Enter UCF id: ");
-        //     tempStuId = scanner.next();
-        //     if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
-        //         System.out.println("Invalid UCF ID. Please enter a 7-digit number.");
-        //     } else {
-        //         break;
-        //     }
-        // }
-
-//System.out.print("Enter UCF id: ");
-        //      String tempStuId = scanner.next();
         scanner.nextLine();
-
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
 
@@ -558,7 +516,8 @@ public class FinalProject {
             // if (person.getUcfId().equals(tempId)) {
             if (person.getId() != null && person.getId().equals(tempStuId)) {
 
-                System.out.println(person.getName() + " is enrolled in the following lectures: \n");
+                System.out.println("Record found: \n" + person.getName() + "\n");
+                System.out.println("Enrolled in the following lectures: \n");
 
                 foundMatch = true; // set flag to true if a match is found
 
@@ -603,14 +562,10 @@ public class FinalProject {
         System.out.println("[" + crnToDelete + "/" + lectureToDelete.getPrefix() + "/" + lectureToDelete.getTitle() + "] Deleted");
     }
 
-
-
-    // In method 7, user is prompted to print lec.txt ONLY IF deleteLecture() is run, else "Bye!"
-    private static boolean lectureDeleted = false;
-
     // Option 7 - Exit
     private static void goodBye(Scanner scanner, ArrayList<Course> courseList, boolean lectureDeleted) {
-        if(lectureDeleted){
+
+        if (lectureDeleted) {
             System.out.println("You have made a deletion of at least one lecture. Would you like to print the copy of lec.txt?");
             System.out.print("Enter y/Y for Yes or n/N for No: ");
 
@@ -618,8 +573,25 @@ public class FinalProject {
                 String response = scanner.next().trim().toLowerCase();
                 if (response.equals("y")) {
                     System.out.println("Printing copy of lec.txt...");
+
+
                     for (Course course : courseList)
                         System.out.println(course);
+                    //break;
+
+
+                    try {
+                        BufferedWriter writer = new BufferedWriter(new FileWriter("lec.txt"));
+                        for (Course course : courseList) {
+                            writer.write(course.toString());
+                            writer.newLine();
+                        }
+                        writer.close();
+                        System.out.println("lec.txt has been updated.");
+                    } catch (IOException e) {
+                        System.out.println("Error updating lec.txt: " + e.getMessage());
+                    }
+
                     break;
                 } else if (response.equals("n")) {
                     System.out.println("Okay, lec.txt will not be printed.");
@@ -631,11 +603,6 @@ public class FinalProject {
         System.out.println("Bye!");
         System.exit(0);
     }
-
-
-
-
-
 
 
     // Update to using the name ID exception
