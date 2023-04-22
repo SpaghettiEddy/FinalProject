@@ -151,12 +151,16 @@ class Student extends Person {
     private ArrayList<Lab> labsAttending = new ArrayList<>();
     private ArrayList<Lab> labsAssisting = new ArrayList<>();
 
+
     public String getAdvisor() {return advisor;}
     public void setAdvisor(String advisor) {this.advisor = advisor;}
     public String getDegree() {return degree;}
     public void setDegree(String degree) {this.degree = degree;}
     public boolean isTA() {return isTA;}
     public void setTA(boolean TA) {isTA = TA;}
+    public ArrayList<Lab> getLabsAssisting() {return labsAssisting;}
+    public void setLabsAssisting(ArrayList<Lab> labsAssisting) {this.labsAssisting = labsAssisting;}
+
 
     public String getStudentType() {return studentType;}
     public void setStudentType(String studentType) {this.studentType = studentType;}
@@ -481,7 +485,6 @@ public class FinalProject {
 
                             for (Person person: people) {
                                 if (person.getId() != null && person.getId().equals(tempTAId)) {
-                                    System.out.println("TA found as a student: " + person.getName());
                                     ((Student) person).addTALab((Lab) courseList.get(j + k + 1));
                                     foundMatch = true; // set flag to true if a match is found
                                 }
@@ -506,9 +509,6 @@ public class FinalProject {
                 }
             }
         }
-
-             for (Person person: people)
-               System.out.println(person);
     }
 
 
@@ -620,7 +620,6 @@ public class FinalProject {
 
         String tempTAId;
 
-
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -645,7 +644,15 @@ public class FinalProject {
             //if (person.getTAId().equals(tempTAId)) {
             if (person.getId() != null && person.getId().equals(tempTAId)) {
 
+                ArrayList<Lab> TALabs = ((Student) person).getLabsAssisting();
                 System.out.println(person.getName() + " is assisting the following lectures: \n");
+                for (Lab lab: TALabs) {
+                    for (Course course: courseList) {
+                        if (lab.getCrn() == course.getCrn()) {
+                            System.out.println(lab);
+                        }
+                    }
+                }
                 foundMatch = true; // set flag to true if a match is found
             }
         }
