@@ -562,15 +562,7 @@ public class FinalProject {
                 }
                 System.out.println("Student enrolled!");
                 scanner.nextLine();
-
             }
-
-
-        //
-        System.out.println("\n\njust to test\n\n");
-        for (Course course: tempStudent.getCoursesTaking())
-            System.out.println(course);
-        //
     }
 
 
@@ -691,12 +683,10 @@ public class FinalProject {
             try {
                 System.out.print("Enter UCF id: ");
                 tempStuId = scanner.next();
-
-                if (tempStuId.length() != 7 || !tempStuId.matches("\\d+")) {
+                if (tempStuId.length() != 7 || !tempStuId.matches("\\d+"))
                     throw new IdException();
-                } else {
+                 else
                     break;
-                }
             } catch (IdException e) {
                 System.out.println(e.getMessage());
             }
@@ -707,15 +697,15 @@ public class FinalProject {
 
         for (Person person : people) {
             if (person.getId() != null && person.getId().equals(tempStuId)) {
-                System.out.println("Record found: \n" + person.getName() + "\n");
-                System.out.println("\tEnrolled in the following lectures: \n");
+                System.out.println("Record found: \n\t" + person.getName());
+                System.out.print("\tEnrolled in the following lectures:");
                 ArrayList<Course> studentsCourses = ((Student) person).getCoursesTaking();
                 for (int i = 0; i < studentsCourses.size(); i++) {
-                    if (studentsCourses.get(i) instanceof Lecture) { //Is the current course a Lecture!
+                    if (studentsCourses.get(i) instanceof Lecture) { //Is the current course a Lecture?
+                        System.out.print("\n\t\t[" + ((Lecture) studentsCourses.get(i)).getPrefix() + "/" + ((Lecture) studentsCourses.get(i)).getTitle() + "]");
                         if (((Lecture) studentsCourses.get(i)).isHasLab()) { //If this lecture HAS labs
-                            //
-                        } else {    //If the lecture does NOT have labs
-
+                            i++;
+                            System.out.print("/[Lab: " + studentsCourses.get(i).getCrn() + "]");
                         }
                     }
                 }
