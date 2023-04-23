@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.Stream;
+import java.util.Random;
 
 abstract class Course {
     private int crn;
@@ -173,6 +174,10 @@ class Student extends Person {
         labsAssisting.add(labAssisting);
     }
 
+    public void addCourse(Course course) {
+        coursesTaking.add(course);
+    }
+
     public Student(String id, String name) {
         setId(id);
         setName(name);
@@ -212,6 +217,7 @@ public class FinalProject {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
         Scanner fileScan;
 
         // // In method 7, user is prompted to print lec.txt ONLY IF deleteLecture() is run, else "Bye!"
@@ -472,20 +478,18 @@ public class FinalProject {
         int tempCrn;
         Student tempStudent = null;
         Lecture tempLecture = null;
-        while (true) {
+
+        while (true)
             try {
                 System.out.print("Enter UCF id: ");
                 tempId = scanner.next();
-
-                if (tempId.length() != 7 || !tempId.matches("\\d+")) {
+                if (tempId.length() != 7 || !tempId.matches("\\d+"))
                     throw new IdException();
-                } else {
+                else
                     break;
-                }
             } catch (IdException e) {
                 System.out.println(e.getMessage());
             }
-        }
         scanner.nextLine();
 
         boolean foundMatch = false; // add a flag to keep track if a match was found
@@ -503,24 +507,43 @@ public class FinalProject {
             System.out.print("Name of Student: ");
             String tempName = scanner.nextLine();
             tempStudent = new Student(tempId, tempName);
+            people.add(tempStudent);
         }
         System.out.print("Which lecture to enroll [" + tempStudent.getName() + "] in? ");
         tempCrn = scanner.nextInt();        //Scan in the crn of the lecture to be enrolled in
 
         for (Course course: courseList)     //Search courselist for a corresponding Lecture
-            if (course.getCrn() == tempCrn)
+            if (course.getCrn() == tempCrn) {
                 tempLecture = (Lecture) course;         //Assign it to tempLecture to be able to work with it more easily
+                if (tempStudent.getCoursesTaking().contains(course)) {      //If they're already taking the lecture
+                    System.out.println(tempStudent.getName() + " is already taking " + "[" + tempLecture.getPrefix() + "/" + tempLecture.getTitle() + "]");
+                    break;
+                }
 
-        if (tempLecture.isHasLab()) {
-            System.out.println("[" + tempLecture.getPrefix() + "/" + tempLecture.getTitle() + "]" + " has these labs:");
-            for (int k = 1; k <= 3; k++)
-                System.out.println(courseList.get(courseList.indexOf(tempLecture) + k));
+                if (tempLecture.isHasLab()) {
+                    Random random = new Random();
+                    int randomLab = random.nextInt(3) + 1;
+                    System.out.println("[" + tempLecture.getPrefix() + "/" + tempLecture.getTitle() + "]" + " has these labs:");
+                    for (int k = 1; k <= 3; k++)
+                        System.out.println("\t" + courseList.get(courseList.indexOf(tempLecture) + k));
 
-            System.out.print(tempStudent.getName() + " is added to lab: ");
+                    Lab labToAdd = (Lab) courseList.get(courseList.indexOf(tempLecture) + randomLab);
+                    tempStudent.addCourse(labToAdd);
+                    System.out.println("[" + tempStudent.getName() + "] is added to lab: " + labToAdd.getCrn());
 
-        }
-        System.out.print("Student enrolled!");
-        scanner.nextLine();
+                }
+                System.out.println("Student enrolled!");
+                scanner.nextLine();
+
+                tempStudent.addCourse(course);
+            }
+
+
+        //
+        System.out.println("\n\njust to test\n\n");
+        for (Course course: tempStudent.getCoursesTaking())
+            System.out.println(course);
+        //
     }
 
     // Option 3 - Print the schedule of a Faculty
