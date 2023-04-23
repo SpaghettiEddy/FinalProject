@@ -9,15 +9,10 @@ import java.io.BufferedWriter;
 //import java.util.Arrays;
 //import java.util.List;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.FileWriter;
-import java.io.FileNotFoundException;
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.stream.Stream;
 import java.util.Random;
 
 abstract class Course {
@@ -118,16 +113,19 @@ abstract class Person {
 class Faculty extends Person{
     private String rank;
     private String office;
-    private int[] lecturesTaught;
+    private int[] lecturesTeaching;
+    private ArrayList<Lecture> lecturesTaught = new ArrayList<>();
 
     public String getRank() {return rank;}
     public void setRank(String rank) {this.rank = rank;}
     public String getOffice() {return office;}
     public void setOffice(String office) {this.office = office;}
-    public int[] getLecturesTaught() {return lecturesTaught;}
-    public void setLecturesTaught(int[] lecturesTaught) {this.lecturesTaught = lecturesTaught;}
+    public int[] getLecturesTeaching() {return lecturesTeaching;}
+    public void setLecturesTeaching(int[] lecturesTeaching) {this.lecturesTeaching = lecturesTeaching;}
+    public ArrayList<Lecture> getLecturesTaught() {return lecturesTaught;}
+    public void setLecturesTaught(ArrayList<Lecture> lecturesTaught) {this.lecturesTaught = lecturesTaught;}
 
-    public Faculty(String id, String name, String rank, String office, int[] lecturesTaught) {
+    public Faculty(String id, String name, String rank, String office, ArrayList<Lecture> lecturesTaught) {
         setId(id);
         setName(name);
         setRank(rank);
@@ -302,7 +300,8 @@ public class FinalProject {
 
         String tempId, tempName = null, tempRank = null, tempOffice = null;
         int numCourses;
-        int lecturesTaught[], tempLab[];
+        ArrayList<Lecture> tempLecturesTaught = new ArrayList<>();
+        int lecturesTeaching[], tempLab[];
         tempLab = new int[3];
 
         while (true) {
@@ -331,17 +330,6 @@ public class FinalProject {
             }
         }
 
-
-
-        // //   Check if the UCF ID already exists
-        // for (Person person : people) {
-        //     if (person.getId().equals(tempId)) {
-        //         System.out.println("Faculty with this UCF ID already exists. Skipping name, rank, and office input.");
-        //         return;
-        //     }
-        // }
-
-
         if (!facultyExists) {
 
             System.out.print("Enter name: ");
@@ -366,26 +354,34 @@ public class FinalProject {
         numCourses = scanner.nextInt();
 
 
-        lecturesTaught = new int[numCourses];
+        lecturesTeaching = new int[numCourses];
         System.out.print("Enter the CRNs of the lectures: ");
         for (int i = 0; i < numCourses; i++) {
             int crn = scanner.nextInt();
             boolean invalidCRN = false;
 
-            // Check if the CRN is already assigned to a faculty
             for (Person person : people) {
                 if (person instanceof Faculty) {
                     Faculty faculty = (Faculty) person;
-                    for (int j = 0; j < faculty.getLecturesTaught().length; j++) {
-                        if (crn == faculty.getLecturesTaught()[j]) {
+
+                    // Check if the CRN is already assigned to a faculty
+                    for (Lecture lecture: faculty.getLecturesTaught()) {
+                        if (crn == lecture.getCrn()) {
                             System.out.println("CRN " + crn + " is already assigned to " + faculty.getName() + ". Please choose another CRN.");
                             invalidCRN = true;
                             break;
                         }
                     }
-                    if (invalidCRN) {
+//                    for (int j = 0; j < faculty.getLecturesTeaching().length; j++) {
+//                        if (crn == faculty.getLecturesTeaching()[j]) {
+//                            System.out.println("CRN " + crn + " is already assigned to " + faculty.getName() + ". Please choose another CRN.");
+//                            invalidCRN = true;
+//                            break;
+//                        }
+//                    }
+                    if (invalidCRN)
                         break;
-                    }
+
                 }
             }
 
@@ -393,26 +389,36 @@ public class FinalProject {
                 i--;
                 continue;
             }
-
-            lecturesTaught[i] = crn;
+            for (Course course: courseList){
+                if (lecturesTeaching[i] == course.getCrn()){
+                    tempLecturesTaught.add((Lecture) course);
+                }
+            }
+            lecturesTeaching[i] = crn;
         }
 
-        temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
+        temp = new Faculty(tempId, tempName, tempRank, tempOffice, tempLecturesTaught);
         people.add(temp);
 
-        // lecturesTaught = new int[numCourses];
-        // System.out.print("Enter the crns of the lectures: ");
-        // for (int i = 0; i < numCourses; i++)
-        //     lecturesTaught[i] = scanner.nextInt();
-
-
-        // temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
-        // people.add(temp);
+//
+        for (Person person: people)
+            System.out.println(person);
+//        WORKING ON THIS DO NOT DELETE
+//
+//        for (int i = 0; i < numCourses; i++) {
+//            for (Course course: courseList) {
+//                if (course.getCrn() == lecturesTeaching[i]){
+//                    if (((Lecture)course).getModality().equalsIgnoreCase("Online"))
+//
+//                }
+//
+//            }
+//        }
 
         for (int i = 0; i < numCourses; i++) {
             for (int j = 0; j < courseList.size(); j++) {
-                if (courseList.get(j).getCrn() == lecturesTaught[i]) {
-                    if (((Lecture) courseList.get(j)).getModality().equalsIgnoreCase("Online")) //
+                if (courseList.get(j).getCrn() == lecturesTeaching[i]) {
+                    if (!(((Lecture) courseList.get(j)).isHasLab())) //
                         System.out.println("[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() +
                                 "/" + ((Lecture) courseList.get(j)).getTitle() + "]" + " Added!");
                     else if (((Lecture) courseList.get(j)).isHasLab()) {
@@ -533,7 +539,6 @@ public class FinalProject {
                     break;
                 }
 
-
                 boolean canEnroll = true;
                 for (Course enrolledCourse : tempStudent.getCoursesTaking()) {
                     if (enrolledCourse instanceof Lecture && ((Lecture) enrolledCourse).getPrefix().equals(tempLecture.getPrefix())) {
@@ -600,9 +605,9 @@ public class FinalProject {
         if (!facultyFound)
             System.out.println("No Faculty with this id.");
 
-        for (int i = 0; i < professor.getLecturesTaught().length; i++) {
+        for (int i = 0; i < professor.getLecturesTeaching().length; i++) {
             for (int j = 0; j < courseList.size(); j++) {
-                if (professor.getLecturesTaught()[i] == courseList.get(j).getCrn()){
+                if (professor.getLecturesTeaching()[i] == courseList.get(j).getCrn()){
                     if (((Lecture) courseList.get(j)).isHasLab()) {
                         System.out.println("\t[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getTitle() + "] with Labs:" );
                         for (int k = 1; k <= 3; k++)
@@ -720,29 +725,51 @@ public class FinalProject {
 
     // Option 6 - Delete a Lecture
     private static void deleteLecture(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-
         int crnToDelete;
-        int courseIndex = 0;
+        Faculty tempFaculty = null;
+        Student tempStudent = null;
         Lecture lectureToDelete = null;
+
         System.out.print("Enter the crn of the lecture to delete: ");
+        //CRASH PROOF THIS INPUT
         crnToDelete = scanner.nextInt();
 
-        for (Course course : courseList) {
+        for (Course course : courseList)
             if (course.getCrn() == crnToDelete) {
-                lectureToDelete = (Lecture) courseList.get(courseIndex);
-                if (((Lecture) course).isHasLab())
-                    for (int i = 0; i < 3; i++)
-                        courseList.remove(courseIndex);
-                courseList.remove(courseIndex);
+                lectureToDelete = (Lecture) course;
+                if (lectureToDelete.isHasLab())
+                    for (int i = 1; i <= 3; i++) {
+                        for (Person person: people){
+                            if (person instanceof Student){
+                                tempStudent = (Student) person;
+                                if (tempStudent.isTA())
+                                    if (tempStudent.getLabsAssisting().contains(courseList.indexOf(course) + 1))
+                                        tempStudent.getLabsAssisting().remove(courseList.indexOf(course) + 1);
+
+                                if (tempStudent.getCoursesTaking().contains(courseList.indexOf(course) + 1))
+                                    tempStudent.getCoursesTaking().remove(courseList.indexOf(course) + 1);
+                            }
+                        }
+                        courseList.remove(courseList.indexOf(course) + 1);
+                    }
+                for (Person person: people){
+                    if (person instanceof Student){
+                        tempStudent = (Student) person;
+                        if (tempStudent.getCoursesTaking().contains(lectureToDelete))
+                            tempStudent.getCoursesTaking().remove(lectureToDelete);
+                    } else if (person instanceof Faculty) {
+                        tempFaculty = (Faculty) person;
+                        if (tempFaculty.getLecturesTaught().contains(lectureToDelete))
+                            tempFaculty.getLecturesTaught().remove(lectureToDelete);
+                    }
+                }
+                courseList.remove(lectureToDelete);
                 break;
             }
-            courseIndex++;
-        }
         if (lectureToDelete == null) {
             System.out.println("Lecture not found with CRN " + crnToDelete);
             return;
         }
-        // courseList.remove(lectureToDelete);
         System.out.println("[" + crnToDelete + "/" + lectureToDelete.getPrefix() + "/" + lectureToDelete.getTitle() + "] Deleted");
     }
 
