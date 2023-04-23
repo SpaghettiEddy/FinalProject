@@ -78,7 +78,7 @@ class Lecture extends Course {
 
 
 
-@Override
+  @Override
 public String toString(){
     if (modality.equalsIgnoreCase("Online"))
         return getCrn() + "," + prefix + "," + title + "," + gradLevel + "," + modality;
@@ -89,9 +89,6 @@ public String toString(){
 }
 
 }
-  
-
-
 
 //     @Override
 //     public String toString(){
@@ -172,6 +169,13 @@ class Student extends Person {
     public void setDegree(String degree) {this.degree = degree;}
     public boolean isTA() {return isTA;}
     public void setTA(boolean TA) {isTA = TA;}
+    public ArrayList<Lab> getLabsAssisting() {return labsAssisting;}
+    public void setLabsAssisting(ArrayList<Lab> labsAssisting) {this.labsAssisting = labsAssisting;}
+
+
+
+
+  
 
     public String getStudentType() {return studentType;}
     public void setStudentType(String studentType) {this.studentType = studentType;}
@@ -193,6 +197,10 @@ class Student extends Person {
         setTA(false);
 
     }
+  
+
+
+  
 }
 
 
@@ -452,15 +460,7 @@ public class Main {
         temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
         people.add(temp);
 
-        // lecturesTaught = new int[numCourses];
-        // System.out.print("Enter the crns of the lectures: ");
-        // for (int i = 0; i < numCourses; i++)
-        //     lecturesTaught[i] = scanner.nextInt();
-
-
-        // temp = new Faculty(tempId, tempName, tempRank, tempOffice, lecturesTaught);
-        // people.add(temp);
-
+   
         for (int i = 0; i < numCourses; i++) {
             for (int j = 0; j < courseList.size(); j++) {
                 if (courseList.get(j).getCrn() == lecturesTaught[i]) {
@@ -496,7 +496,6 @@ public class Main {
 
                             for (Person person: people) {
                                 if (person.getId() != null && person.getId().equals(tempTAId)) {
-                                    System.out.println("TA found as a student: " + person.getName());
                                     ((Student) person).addTALab((Lab) courseList.get(j + k + 1));
                                     foundMatch = true; // set flag to true if a match is found
                                 }
@@ -521,16 +520,17 @@ public class Main {
                 }
             }
         }
-
-             for (Person person: people)
-               System.out.println(person);
     }
 
+  
 
-
-    // Option 2 - Enroll a Student to a Lecture
+// Option 2 - Enroll a Student to a Lecture
     public static void enrollStudent(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         String tempId;
+        int tempCrn;
+      int tempLab;
+        Student tempStudent = null;
+        Lecture tempLecture = null;
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -549,38 +549,43 @@ public class Main {
 
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
-
         for (Person person: people) {
             // if (person.getTAId().equals(tempStuId)) {
-            if (         person.getId()         != null && person.getId().equals(tempId)) {
-                System.out.println("Record found/name: " + person.getName());
+            if (person.getId() != null && person.getId().equals(tempId)) {  //If person is already in ArrayList people
+                System.out.println("Record found/Name: " + person.getName());
+                tempStudent = (Student) person;
                 foundMatch = true; // set flag to true if a match is found
-
-
-                System.out.println("Which lecture to enroll " + person.getName() + " in: ");
-
-                System.out.println(person.getName() + " has these labs: ");
-
-                System.out.print("[] is added to lab:");
-                scanner.nextLine();
-
             }
         }
+
         if (!foundMatch) {
             System.out.print("Name of Student: ");
-            String askStuName = scanner.next();
-            scanner.nextLine();
+            String tempName = scanner.nextLine();
+            tempStudent = new Student(tempId, tempName);
+        }
+        System.out.print("Which lecture to enroll [" + tempStudent.getName() + "] in? ");
+        tempCrn = scanner.nextInt();        //Scan in the crn of the lecture to be enrolled in
 
-            System.out.println("Which lecture to enroll " + askStuName + " in: ");
+        for (Course course: courseList)     //Search courselist for a corresponding Lecture
+            if (course.getCrn() == tempCrn)
+                tempLecture = (Lecture) course;         //Assign it to tempLecture to be able to work with it more easily
+      
+        if (tempLecture.isHasLab()) {
+            System.out.println("[" + tempLecture.getPrefix() + "/" + tempLecture.getTitle() + "]" + " has these labs:");
+            for (int k = 1; k <= 3; k++)
+                System.out.println(courseList.get(courseList.indexOf(tempLecture) + k));
 
-            System.out.println("[] has these labs: \n");
-
-            System.out.print(askStuName + " is added to lab: ");
-            String stuLab = scanner.next();
-            scanner.nextLine();
+            System.out.print(tempStudent.getName() + " is added to lab: ");
+ tempLab = scanner.nextInt();
         }
         System.out.print("Student enrolled!");
+        scanner.nextLine();
     }
+  
+
+
+
+  
 
     // Option 3 - Print the schedule of a Faculty
     private static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
@@ -635,7 +640,6 @@ public class Main {
 
         String tempTAId;
 
-
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -656,22 +660,38 @@ public class Main {
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
 
-        for (Person person : people) {
-            //if (person.getTAId().equals(tempTAId)) {
-            if (person.getId() != null && person.getId().equals(tempTAId)) {
 
-                System.out.println(person.getName() + " is assisting the following lectures: \n");
-                foundMatch = true; // set flag to true if a match is found
+
+for (Person person : people) {
+    if (person.getId() != null && person.getId().equals(tempTAId)) {
+        ArrayList<Lab> TALabs = ((Student) person).getLabsAssisting();
+        boolean foundLab = false; // add a flag to keep track if a lab is found
+        for (Lab lab: TALabs) {
+            boolean labFound = false; // add a flag to keep track if the lab is found
+            for (Course course: courseList) {
+                if (lab.getCrn() == course.getCrn()) {
+                    if (!foundLab) {
+                        System.out.println(person.getName() + " is assisting the following lectures: \n");
+                        foundLab = true;
+                    }
+                    System.out.println(lab);
+                    labFound = true; // set flag to true if the lab is found
+                }
             }
+        
         }
-
-        // Check the flag and print error message if no matching UCF ID is found
-        if (!foundMatch) {
-            System.out.println("No TA with this id.");
+        if (!foundLab) {
+            System.out.println("No labs are currently assigned to this TA.");
         }
+        foundMatch = true;
     }
+}
 
+if (!foundMatch) {
+    System.out.println("No TA with this id.");
+}
 
+    }
 
 
 
@@ -851,8 +871,4 @@ public class Main {
 //         }
 //     }
 // }
-
-
-
-
 
