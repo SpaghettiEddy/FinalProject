@@ -4,17 +4,14 @@
     Eduardo Vila
     John LASTNAME
  */
+
 import java.io.BufferedWriter;
 //import java.util.Arrays;
 //import java.util.List;
-
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
-
 import java.io.FileNotFoundException;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,6 +35,7 @@ abstract class Course {
     }
 }
 
+
 class Lecture extends Course {
 
     private String prefix;
@@ -45,7 +43,6 @@ class Lecture extends Course {
     private String gradLevel;
     private String modality;
     private boolean hasLab;
-
 
     public String getPrefix() {return prefix;}
     public void setPrefix(String prefix) {this.prefix = prefix;}
@@ -76,16 +73,17 @@ class Lecture extends Course {
         setHasLab(hasLab);
     }
 
-
-
     @Override
     public String toString(){
         if (modality.equalsIgnoreCase("Online"))
-            return getCrn() + "," + title + "," + gradLevel + "," + modality;
-        else
-            return getCrn() + "," + title + "," + gradLevel + "," + modality + "," + getLocation() + "," + hasLab;
+            return getCrn() + "," + prefix + "," + title + "," + gradLevel + "," + modality;
+        else {
+            String hasLabString = hasLab ? "Yes" : "No"; // check value of hasLab
+            return getCrn() + "," + prefix + "," + title + "," + gradLevel + "," + modality + "," + getLocation() + "," + hasLabString;
+        }
     }
 }
+
 
 class Lab extends Course {
     private String TAId;
@@ -98,6 +96,7 @@ class Lab extends Course {
         setLocation(location);
     }
 }
+
 
 abstract class Person {
     private String name;
@@ -113,6 +112,7 @@ abstract class Person {
         return id + "," + name;
     }
 }
+
 
 class Faculty extends Person{
     private String rank;
@@ -141,29 +141,26 @@ class Faculty extends Person{
 }
 
 
-
 class Student extends Person {
     private String advisor;
     private String degree;
     private String studentType;
     private boolean isTA;
-    private ArrayList<Lecture> lecturesAttending = new ArrayList<>();
-    private ArrayList<Lab> labsAttending = new ArrayList<>();
+    private ArrayList<Course> coursesTaking = new ArrayList<>();
     private ArrayList<Lab> labsAssisting = new ArrayList<>();
-
 
     public String getAdvisor() {return advisor;}
     public void setAdvisor(String advisor) {this.advisor = advisor;}
     public String getDegree() {return degree;}
     public void setDegree(String degree) {this.degree = degree;}
-    public boolean isTA() {return isTA;}
-    public void setTA(boolean TA) {isTA = TA;}
-    public ArrayList<Lab> getLabsAssisting() {return labsAssisting;}
-    public void setLabsAssisting(ArrayList<Lab> labsAssisting) {this.labsAssisting = labsAssisting;}
-
-
     public String getStudentType() {return studentType;}
     public void setStudentType(String studentType) {this.studentType = studentType;}
+    public boolean isTA() {return isTA;}
+    public void setTA(boolean TA) {isTA = TA;}
+    public ArrayList<Course> getCoursesTaking() {return coursesTaking;}
+    public void setCoursesTaking(ArrayList<Course> coursesTaking) {this.coursesTaking = coursesTaking;}
+    public ArrayList<Lab> getLabsAssisting() {return labsAssisting;}
+    public void setLabsAssisting(ArrayList<Lab> labsAssisting) {this.labsAssisting = labsAssisting;}
 
     public void addTAData(String advisor, String degree, Lab labAssisting) {
         setAdvisor(advisor);
@@ -180,38 +177,8 @@ class Student extends Person {
         setId(id);
         setName(name);
         setTA(false);
-
     }
 }
-
-
-
-
-
-
-
-
-// class TA extends Person {
-//     private String advisor;
-//     private String degree;
-
-//     public String getAdvisor() {return advisor;}
-//     public void setAdvisor(String advisor) {this.advisor = advisor;}
-//     public String getDegree() {return degree;}
-//     public void setDegree(String degree) {this.degree = degree;}
-
-//     public TA(String id, String name, String advisor, String degree) {
-//         setId(id);
-//         setName(name);
-//         setAdvisor(advisor);
-//         setDegree(degree);
-//     }
-// }
-
-// class Student extends Person {
-//     private String studentType;
-// }
-
 
 
 class IdException extends Exception {
@@ -225,15 +192,7 @@ class IdException extends Exception {
 }
 
 
-
-
-
-
-
-
-
 public class FinalProject {
-
     private static String menu() {
         Scanner myScan = new Scanner(System.in);
         String option;
@@ -252,7 +211,6 @@ public class FinalProject {
     }
 
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
         Scanner fileScan;
 
@@ -264,10 +222,7 @@ public class FinalProject {
 
 
         ArrayList<Course> courseList = new ArrayList<>();
-
         ArrayList<Person> people = new ArrayList<>();
-
-
 
         System.out.print("Enter the absolute path of the file: ");
         do {                                                // Run until file is successfully loaded
@@ -301,8 +256,6 @@ public class FinalProject {
         }
 
         System.out.println("File Found! Let’s proceed...");
-
-
 
         String option = menu();
 
@@ -616,10 +569,7 @@ public class FinalProject {
 
     // Option 4 - Print the schedule of a TA
     private static void printTASchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-
-
         String tempTAId;
-
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -670,7 +620,6 @@ public class FinalProject {
     // Option 5 - Print the schedule of a Student
     private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         String tempStuId;
-
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -687,28 +636,29 @@ public class FinalProject {
         }
 
         scanner.nextLine();
-
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
         for (Person person : people) {
             if (person.getId() != null && person.getId().equals(tempStuId)) {
-
                 System.out.println("Record found: \n" + person.getName() + "\n");
-                System.out.println("Enrolled in the following lectures: \n");
+                System.out.println("\tEnrolled in the following lectures: \n");
+                ArrayList<Course> studentsCourses = ((Student) person).getCoursesTaking();
+                for (int i = 0; i < studentsCourses.size(); i++) {
+                    if (studentsCourses.get(i) instanceof Lecture) { //Is the current course a Lecture!
+                        if (((Lecture) studentsCourses.get(i)).isHasLab()) { //If this lecture HAS labs
+                            //
+                        } else {    //If the lecture does NOT have labs
 
+                        }
+                    }
+                }
                 foundMatch = true; // set flag to true if a match is found
-
-
             }
         }
 
-
         // Check the flag and print error message if no matching UCF ID is found
-        if (!foundMatch) {
-            System.out.println("No Student with this id.");       }
-
-
-
+        if (!foundMatch)
+            System.out.println("No Student with this id.");
     }
 
     // Option 6 - Delete a Lecture
@@ -738,9 +688,6 @@ public class FinalProject {
         // courseList.remove(lectureToDelete);
         System.out.println("[" + crnToDelete + "/" + lectureToDelete.getPrefix() + "/" + lectureToDelete.getTitle() + "] Deleted");
     }
-
-
-
 
 
     // Option 7 - Exit
@@ -785,10 +732,6 @@ public class FinalProject {
         System.exit(0);
     }
 }
-
-
-
-
 
 //         if(lectureDeleted){
 //             System.out.println("You have made a deletion of at least one lecture. Would you like to print the copy of lec.txt?");
