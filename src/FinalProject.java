@@ -469,6 +469,9 @@ public class FinalProject {
     // Option 2 - Enroll a Student to a Lecture
     public static void enrollStudent(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         String tempId;
+        int tempCrn;
+        Student tempStudent = null;
+        Lecture tempLecture = null;
         while (true) {
             try {
                 System.out.print("Enter UCF id: ");
@@ -487,37 +490,37 @@ public class FinalProject {
 
         boolean foundMatch = false; // add a flag to keep track if a match was found
 
-
         for (Person person: people) {
             // if (person.getTAId().equals(tempStuId)) {
-            if (         person.getId()         != null && person.getId().equals(tempId)) {
-                System.out.println("Record found/name: " + person.getName());
+            if (person.getId() != null && person.getId().equals(tempId)) {  //If person is already in ArrayList people
+                System.out.println("Record found/Name: " + person.getName());
+                tempStudent = (Student) person;
                 foundMatch = true; // set flag to true if a match is found
-
-
-                System.out.println("Which lecture to enroll " + person.getName() + " in: ");
-
-                System.out.println(person.getName() + " has these labs: ");
-
-                System.out.print("[] is added to lab:");
-                scanner.nextLine();
-
             }
         }
+
         if (!foundMatch) {
             System.out.print("Name of Student: ");
-            String askStuName = scanner.next();
-            scanner.nextLine();
+            String tempName = scanner.nextLine();
+            tempStudent = new Student(tempId, tempName);
+        }
+        System.out.print("Which lecture to enroll [" + tempStudent.getName() + "] in? ");
+        tempCrn = scanner.nextInt();        //Scan in the crn of the lecture to be enrolled in
 
-            System.out.println("Which lecture to enroll " + askStuName + " in: ");
+        for (Course course: courseList)     //Search courselist for a corresponding Lecture
+            if (course.getCrn() == tempCrn)
+                tempLecture = (Lecture) course;         //Assign it to tempLecture to be able to work with it more easily
 
-            System.out.println("[] has these labs: \n");
+        if (tempLecture.isHasLab()) {
+            System.out.println("[" + tempLecture.getPrefix() + "/" + tempLecture.getTitle() + "]" + " has these labs:");
+            for (int k = 1; k <= 3; k++)
+                System.out.println(courseList.get(courseList.indexOf(tempLecture) + k));
 
-            System.out.print(askStuName + " is added to lab: ");
-            String stuLab = scanner.next();
-            scanner.nextLine();
+            System.out.print(tempStudent.getName() + " is added to lab: ");
+
         }
         System.out.print("Student enrolled!");
+        scanner.nextLine();
     }
 
     // Option 3 - Print the schedule of a Faculty
