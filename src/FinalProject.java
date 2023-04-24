@@ -2,7 +2,7 @@
     COP3330 Final Project
     Ashley Fram
     Eduardo Vila
-    John LASTNAME
+    Johnathan Cai
  */
 
 import java.io.BufferedWriter;
@@ -396,14 +396,19 @@ public class FinalProject {
 
 //        WORKING ON THIS DO NOT DELETE
 //
-//        for (int i = 0; i < numCourses; i++) {
-//            for (Course course: courseList) {
-//                if (course.getCrn() == lecturesTeaching[i]){
-//                    if (((Lecture)course).getModality().equalsIgnoreCase("Online"))
-//
+//        for (Lecture lecture: tempFaculty.getLecturesTaught()) {
+//            if (!lecture.isHasLab())
+//                System.out.println("[" + lecture.getCrn() + "/" + lecture.getPrefix() + "/" + lecture.getTitle() + "]" + " Added!");
+//            else if (lecture.isHasLab()) {
+//                System.out.println("[" + lecture.getCrn() + "/" + lecture.getPrefix() + "/" + lecture.getTitle() + "]" + " has these labs:");
+//                for (int k = 1; k <= 3; k++) {
+//                    System.out.println("\t\t\t" + courseList.get(courseList.indexOf(lecture) + k).getCrn() + "," +
+//                            courseList.get(courseList.indexOf(lecture) + k).getLocation());
+//                    tempLab[k] = courseList.get(courseList.indexOf(lecture) + k).getCrn();
 //                }
 //
 //            }
+//
 //        }
 
         for (int i = 0; i < numCourses; i++) {
@@ -604,19 +609,6 @@ public class FinalProject {
             } else
                 System.out.println("\t[" + lecture.getPrefix() + "/" + lecture.getTitle() + "][" + lecture.getModality() + "]");
         }
-
-//        for (int i = 0; i < professor.getLecturesTeaching().length; i++) {
-//            for (int j = 0; j < courseList.size(); j++) {
-//                if (professor.getLecturesTeaching()[i] == courseList.get(j).getCrn()){
-//                    if (((Lecture) courseList.get(j)).isHasLab()) {
-//                        System.out.println("\t[" + courseList.get(j).getCrn() + "/" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getTitle() + "] with Labs:" );
-//                        for (int k = 1; k <= 3; k++)
-//                            System.out.println("\t\t[" + courseList.get(j + k).getCrn() + "/" + courseList.get(j + k).getLocation() + "]");
-//                    } else
-//                        System.out.println("\t[" + ((Lecture) courseList.get(j)).getPrefix() + "/" + ((Lecture) courseList.get(j)).getTitle() + "] [" + ((Lecture) courseList.get(j)).getModality() + "]");
-//                }
-//            }
-//        }
     }
 
     // Option 4 - Print the schedule of a TA
@@ -678,10 +670,7 @@ public class FinalProject {
 
     }
 
-
-
-
-    // Option 5 - Print the schedule of a Student
+// Option 5 - Print the schedule of a Student
     private static void printStudentSchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
         String tempStuId;
         while (true) {
@@ -785,7 +774,6 @@ public class FinalProject {
                 String response = scanner.next().trim().toLowerCase();
                 if (response.equals("y")) {
                     System.out.println("Printing copy of lec.txt...");
-
 
                     for (Course course : courseList)
                         System.out.println(course);
