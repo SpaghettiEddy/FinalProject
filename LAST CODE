@@ -637,49 +637,54 @@ if (!courseFound) {
 
 
 
-    // Option 3 - Print the schedule of a Faculty
-    public static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
-        String tempId;
-        ArrayList<Lecture> lecturesTeaching = null;
-        while (true) {
-            try {
-                System.out.print("Enter UCF id: ");
-                tempId = scanner.next();
 
-                if (tempId.length() != 7 || !tempId.matches("\\d+")) {
-                    throw new IdException();
-                } else {
-                    break;
-                }
-            } catch (IdException e) {
-                System.out.println(e.getMessage());
+
+// Option 3 - Print the schedule of a Faculty
+public static void printFacultySchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
+    String tempId;
+    ArrayList<Lecture> lecturesTeaching = null;
+    while (true) {
+        try {
+            System.out.print("Enter UCF id: ");
+            tempId = scanner.next();
+
+            if (tempId.length() != 7 || !tempId.matches("\\d+")) {
+                throw new IdException();
+            } else {
+                break;
             }
-        }
-        scanner.nextLine();
-        Faculty professor = null;
-
-        boolean facultyFound = false;
-
-        for (Person person : people)
-            if (person.getId().equals(tempId)) {
-                professor = (Faculty) person;
-                lecturesTeaching = professor.getLecturesTaught();
-                facultyFound = true;
-                System.out.println(person.getName() + " is teaching the following lectures:");
-            }
-
-        if (!facultyFound)
-            System.out.println("No Faculty with this id.");
-
-        for (Lecture lecture: lecturesTeaching) {           // Traverse the list of lectures that professor is teaching
-            if (lecture.isHasLab()) {
-                System.out.println("\t[" + lecture.getCrn() + "/" + lecture.getPrefix() + "/" + lecture.getTitle() + "] with Labs:" );
-                for (int k = 1; k <= 3; k++)
-                    System.out.println("\t\t[" + courseList.get(courseList.indexOf(lecture) + k).getCrn() + "/" + courseList.get(courseList.indexOf(lecture) + k).getLocation() + "]");
-            } else
-                System.out.println("\t[" + lecture.getPrefix() + "/" + lecture.getTitle() + "][" + lecture.getModality() + "]");
+        } catch (IdException e) {
+            System.out.println(e.getMessage());
         }
     }
+    scanner.nextLine();
+    Faculty professor = null;
+
+    boolean facultyFound = false;
+
+    for (Person person : people)
+        if (person.getId().equals(tempId)) {
+            professor = (Faculty) person;
+            lecturesTeaching = professor.getLecturesTaught();
+            facultyFound = true;
+            System.out.println(person.getName() + " is teaching the following lectures:");
+        }
+
+    if (!facultyFound) {
+        System.out.println("No Faculty with this id.");
+        return; // end the method if no faculty exists
+    }
+
+    for (Lecture lecture: lecturesTeaching) {           // Traverse the list of lectures that professor is teaching
+        if (lecture.isHasLab()) {
+            System.out.println("\t[" + lecture.getCrn() + "/" + lecture.getPrefix() + "/" + lecture.getTitle() + "] with Labs:" );
+            for (int k = 1; k <= 3; k++)
+                System.out.println("\t\t[" + courseList.get(courseList.indexOf(lecture) + k).getCrn() + "/" + courseList.get(courseList.indexOf(lecture) + k).getLocation() + "]");
+        } else
+            System.out.println("\t[" + lecture.getPrefix() + "/" + lecture.getTitle() + "][" + lecture.getModality() + "]");
+    }
+}
+
 
     // Option 4 - Print the schedule of a TA
     private static void printTASchedule(Scanner scanner, ArrayList<Course> courseList, ArrayList<Person> people) {
